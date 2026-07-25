@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { getDropInterval, MAX_LEVEL } from '../utils/constants.js';
 import ColorSequenceModal from './ColorSequenceModal.jsx';
+import SettingsModal from './SettingsModal.jsx';
 
 function LevelStepper({ value, onChange }) {
   const interval = getDropInterval(value);
@@ -29,15 +30,24 @@ function LevelStepper({ value, onChange }) {
   );
 }
 
-export default function LevelSelect({ mode, onStart, onBack }) {
+export default function LevelSelect({
+  mode, onStart, onBack,
+  animSpeed, onAnimSpeed,
+  soundEnabled, onSoundEnabled,
+  musicEnabled, onMusicEnabled,
+}) {
   const [level, setLevel] = useState(0);
   const [showColors, setShowColors] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
 
   return (
     <div className="level-select-screen">
       <div className="back-row">
         <button className="btn btn-ghost btn-sm" onClick={onBack}>Back</button>
         <h2>{mode === 'battle' ? 'Battle Mode' : 'Single Player'}</h2>
+        <button className="btn btn-ghost btn-sm" onClick={() => setShowSettings(true)}>
+          Settings
+        </button>
       </div>
 
       <div className="level-players">
@@ -77,18 +87,30 @@ export default function LevelSelect({ mode, onStart, onBack }) {
 
       {mode === 'battle' && (
         <div className="controls-hint" style={{ lineHeight: 1.9 }}>
-          <strong>Player 1:</strong> A / D = move &nbsp; S = soft drop &nbsp; W = hard drop<br />
-          <strong>Player 2:</strong> Left / Right = move &nbsp; Down = soft drop &nbsp; Up = hard drop
+          <strong>Player 1:</strong> A / D = move &nbsp; S = soft drop &nbsp; W = hard drop &nbsp; R = hold<br />
+          <strong>Player 2:</strong> Left / Right = move &nbsp; Down = soft drop &nbsp; Up = hard drop &nbsp; / = hold
         </div>
       )}
       {mode === 'single' && (
         <div className="controls-hint" style={{ lineHeight: 1.9 }}>
-          <strong>Controls:</strong> Left / Right (or A/D) = move &nbsp; Down/S = soft drop &nbsp; Up/W/Space = hard drop
+          <strong>Controls:</strong> Left / Right (or A/D) = move &nbsp; Down/S = soft drop &nbsp; Up/W/Space = hard drop &nbsp; R = hold
         </div>
       )}
 
       {showColors && (
         <ColorSequenceModal onClose={() => setShowColors(false)} actionLabel="Got it!" />
+      )}
+
+      {showSettings && (
+        <SettingsModal
+          onClose={() => setShowSettings(false)}
+          animSpeed={animSpeed}
+          onAnimSpeed={onAnimSpeed}
+          soundEnabled={soundEnabled}
+          onSoundEnabled={onSoundEnabled}
+          musicEnabled={musicEnabled}
+          onMusicEnabled={onMusicEnabled}
+        />
       )}
     </div>
   );

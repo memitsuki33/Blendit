@@ -63,6 +63,9 @@ export default function App() {
         mode="single"
         onBack={goMenu}
         onStart={() => setScreen('single')}
+        animSpeed={animSpeed} onAnimSpeed={setAnimSpeed}
+        soundEnabled={soundEnabled} onSoundEnabled={setSoundEnabledState}
+        musicEnabled={musicEnabled} onMusicEnabled={setMusicEnabledState}
       />
     );
   }
@@ -76,6 +79,9 @@ export default function App() {
           setGameConfig(cfg);
           setScreen('battle');
         }}
+        animSpeed={animSpeed} onAnimSpeed={setAnimSpeed}
+        soundEnabled={soundEnabled} onSoundEnabled={setSoundEnabledState}
+        musicEnabled={musicEnabled} onMusicEnabled={setMusicEnabledState}
       />
     );
   }
@@ -100,6 +106,9 @@ export default function App() {
         mode="single"
         onBack={goMenu}
         onStart={() => setScreen('mobile-single')}
+        animSpeed={animSpeed} onAnimSpeed={setAnimSpeed}
+        soundEnabled={soundEnabled} onSoundEnabled={setSoundEnabledState}
+        musicEnabled={musicEnabled} onMusicEnabled={setMusicEnabledState}
       />
     );
   }
