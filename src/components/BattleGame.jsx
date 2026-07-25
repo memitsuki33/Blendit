@@ -3,7 +3,7 @@ import { useGameEngine } from '../hooks/useGameEngine.js';
 import GameBoard from './GameBoard.jsx';
 import InfoPanel from './InfoPanel.jsx';
 import SettingsModal from './SettingsModal.jsx';
-import { playMove, playHardDrop, playGarbageSend, playGarbageReceive, playTimedGarbage } from '../utils/soundEffects.js';
+import { playMove, playHardDrop, playSoftDrop, playHold, playLock, playGarbageSend, playGarbageReceive, playTimedGarbage } from '../utils/soundEffects.js';
 
 function isMobile() {
   return (
@@ -74,11 +74,12 @@ export default function BattleGame({
     p2PendingRef.current = p2.state.pendingIncoming;
   }, [p2.state.pendingIncoming]);
 
-  // Timed garbage sound for P1
+  // Lock + timed garbage sounds (P1 drives the audio for both boards)
   const p1TurnsRef = useRef(0);
   useEffect(() => {
-    if (p1.state.timedGarbageThisTurn && p1.state.turns !== p1TurnsRef.current) {
-      playTimedGarbage();
+    if (p1.state.turns !== p1TurnsRef.current) {
+      if (p1.state.timedGarbageThisTurn) playTimedGarbage();
+      else playLock();
     }
     p1TurnsRef.current = p1.state.turns;
   }, [p1.state.turns, p1.state.timedGarbageThisTurn]);
@@ -130,18 +131,18 @@ export default function BattleGame({
         switch (key) {
           case 'a': case 'A': playMove(); p1.moveLeft(); break;
           case 'd': case 'D': playMove(); p1.moveRight(); break;
-          case 's': case 'S': p1.softDrop(); break;
+          case 's': case 'S': playSoftDrop(); p1.softDrop(); break;
           case 'w': case 'W': playHardDrop(); p1.hardDrop(); break;
-          case 'r': case 'R': p1.hold(); break;
+          case 'r': case 'R': playHold(); p1.hold(); break;
         }
         // Player 2: Arrow keys + / = hold
         switch (key) {
           case 'ArrowLeft':  playMove(); p2.moveLeft(); break;
           case 'ArrowRight': playMove(); p2.moveRight(); break;
-          case 'ArrowDown':  p2.softDrop(); break;
+          case 'ArrowDown':  playSoftDrop(); p2.softDrop(); break;
           case 'ArrowUp':    playHardDrop(); p2.hardDrop(); break;
           case ' ':          playHardDrop(); p2.hardDrop(); break;
-          case '/':          p2.hold(); break;
+          case '/':          playHold(); p2.hold(); break;
         }
       }
     },

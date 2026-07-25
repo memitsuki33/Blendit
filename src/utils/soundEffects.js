@@ -196,6 +196,28 @@ export function playGarbageReceive() {
   tone('square', 220, t + 0.10, 0.06, 0.25, 180);
 }
 
+/** Hold piece — quick two-tone swap blip. */
+export function playHold() {
+  if (!_soundEnabled) return;
+  const t = ac().currentTime;
+  tone('square', 523.25, t,        0.05, 0.20, 659.25);
+  tone('square', 392.00, t + 0.06, 0.07, 0.15);
+}
+
+/** Soft drop — subtle short downward sweep. */
+export function playSoftDrop() {
+  if (!_soundEnabled) return;
+  const t = ac().currentTime;
+  tone('square', 280, t, 0.04, 0.10, 180);
+}
+
+/** Piece lock (auto-drop) — quiet thud. */
+export function playLock() {
+  if (!_soundEnabled) return;
+  const t = ac().currentTime;
+  noise(t, 0.04, 0.12, 500);
+}
+
 /** Timed garbage drop every 5 turns — low thud. */
 export function playTimedGarbage() {
   if (!_soundEnabled) return;

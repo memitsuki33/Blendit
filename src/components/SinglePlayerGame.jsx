@@ -4,7 +4,7 @@ import GameBoard from './GameBoard.jsx';
 import InfoPanel from './InfoPanel.jsx';
 import ColorSequenceModal from './ColorSequenceModal.jsx';
 import SettingsModal from './SettingsModal.jsx';
-import { playMove, playHardDrop, playTimedGarbage } from '../utils/soundEffects.js';
+import { playMove, playHardDrop, playSoftDrop, playHold, playLock, playTimedGarbage } from '../utils/soundEffects.js';
 
 function isMobile() {
   return (
@@ -41,11 +41,12 @@ export default function SinglePlayerGame({
   const [showColorGuide, setShowColorGuide] = useState(true);
   const [showSettings, setShowSettings] = useState(false);
 
-  // Sound for timed garbage
+  // Lock + timed garbage sounds
   const prevTurnsRef = useRef(0);
   useEffect(() => {
-    if (state.timedGarbageThisTurn && state.turns !== prevTurnsRef.current) {
-      playTimedGarbage();
+    if (state.turns !== prevTurnsRef.current) {
+      if (state.timedGarbageThisTurn) playTimedGarbage();
+      else playLock();
     }
     prevTurnsRef.current = state.turns;
   }, [state.turns, state.timedGarbageThisTurn]);
@@ -65,13 +66,13 @@ export default function SinglePlayerGame({
           playMove(); moveRight(); break;
         case 'ArrowDown':
         case 's': case 'S':
-          softDrop(); break;
+          playSoftDrop(); softDrop(); break;
         case 'ArrowUp':
         case 'w': case 'W':
         case ' ':
           playHardDrop(); hardDrop(); break;
         case 'r': case 'R':
-          hold(); break;
+          playHold(); hold(); break;
         case 'Escape':
           setShowSettings(s => !s); break;
       }
