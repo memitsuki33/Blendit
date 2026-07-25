@@ -1,13 +1,20 @@
-import React, { useEffect, useRef, useCallback } from 'react';
+import React, { useEffect, useRef, useCallback, useState } from 'react';
 import { useGameEngine } from '../hooks/useGameEngine.js';
 import GameBoard from './GameBoard.jsx';
 import DPad from './DPad.jsx';
+import SettingsModal from './SettingsModal.jsx';
 import { getTileColor, formatValue, formatScore } from '../utils/colors.js';
-import { playGarbageSend, playGarbageReceive } from '../utils/soundEffects.js';
+import { playGarbageSend, playGarbageReceive, playTimedGarbage } from '../utils/soundEffects.js';
 
-export default function MobileBattleGame({ ws, level, playerIndex, onBack }) {
+export default function MobileBattleGame({
+  ws, level, playerIndex, onBack,
+  animSpeed = 'normal', onAnimSpeed,
+  soundEnabled, onSoundEnabled,
+  musicEnabled, onMusicEnabled,
+}) {
   const engine = useGameEngine({ startLevel: level, mode: 'battle' });
   const garbageSentRef = useRef(0);
+  const [showSettings, setShowSettings] = useState(false);
 
   const [oppState, setOppState] = React.useState({ score: 0, gameOver: false, pendingIncoming: 0 });
 
@@ -62,6 +69,15 @@ export default function MobileBattleGame({ ws, level, playerIndex, onBack }) {
     };
   }, [ws, engine]);
 
+  // Timed garbage sound
+  const prevTurnsRef = useRef(0);
+  useEffect(() => {
+    if (engine.state.timedGarbageThisTurn && engine.state.turns !== prevTurnsRef.current) {
+      playTimedGarbage();
+    }
+    prevTurnsRef.current = engine.state.turns;
+  }, [engine.state.turns, engine.state.timedGarbageThisTurn]);
+
   const handleRestart = useCallback(() => {
     garbageSentRef.current = 0;
     gameOverSentRef.current = false;
@@ -96,12 +112,12 @@ export default function MobileBattleGame({ ws, level, playerIndex, onBack }) {
         </div>
       )}
 
-      {/* Board — fills all available vertical space */}
+      {/* Board */}
       <div className="mobile-game-area mobile-game-area-full">
-        <GameBoard state={engine.state} animSpeed="normal" />
+        <GameBoard state={engine.state} animSpeed={animSpeed} />
       </div>
 
-      {/* Info row: back + score + level + next + opp */}
+      {/* Info row */}
       <div className="mobile-bottom-info">
         <button className="btn btn-ghost btn-sm" onClick={onBack}>Back</button>
         <div className="mobile-info-strip">
@@ -129,6 +145,9 @@ export default function MobileBattleGame({ ws, level, playerIndex, onBack }) {
             <span className="mobile-info-lbl">OPP</span>
           </div>
         </div>
+        <button className="btn btn-ghost btn-sm" onClick={() => setShowSettings(true)}>
+          Settings
+        </button>
       </div>
 
       {/* Controls row */}
@@ -146,6 +165,18 @@ export default function MobileBattleGame({ ws, level, playerIndex, onBack }) {
           />
         )}
       </div>
+
+      {showSettings && (
+        <SettingsModal
+          onClose={() => setShowSettings(false)}
+          animSpeed={animSpeed}
+          onAnimSpeed={onAnimSpeed}
+          soundEnabled={soundEnabled}
+          onSoundEnabled={onSoundEnabled}
+          musicEnabled={musicEnabled}
+          onMusicEnabled={onMusicEnabled}
+        />
+      )}
     </div>
   );
 }

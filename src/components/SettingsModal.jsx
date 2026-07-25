@@ -5,8 +5,12 @@ import React from 'react';
  *
  * Props:
  *   onClose        — close the modal
- *   animSpeed      — current anim speed
+ *   animSpeed      — current anim speed ('none' | 'normal')
  *   onAnimSpeed    — change anim speed
+ *   soundEnabled   — bool
+ *   onSoundEnabled — (bool) => void
+ *   musicEnabled   — bool
+ *   onMusicEnabled — (bool) => void
  *   onReset        — (optional) restart at level 0
  *   checkpointLevel— (optional) nearest multiple-of-5 level to load
  *   onLoadLevel    — (optional) restart at checkpointLevel
@@ -15,6 +19,10 @@ export default function SettingsModal({
   onClose,
   animSpeed,
   onAnimSpeed,
+  soundEnabled,
+  onSoundEnabled,
+  musicEnabled,
+  onMusicEnabled,
   onReset,
   checkpointLevel,
   onLoadLevel,
@@ -31,6 +39,7 @@ export default function SettingsModal({
         </div>
 
         <div className="modal-body">
+
           {/* Animation toggle */}
           <div className="modal-row">
             <span className="modal-label">Animation</span>
@@ -41,9 +50,47 @@ export default function SettingsModal({
                   className={`settings-opt${animSpeed === opt ? ' active' : ''}`}
                   onClick={() => onAnimSpeed(opt)}
                 >
-                  {opt === 'none' ? 'No Anim' : 'Anim'}
+                  {opt === 'none' ? 'Off' : 'On'}
                 </button>
               ))}
+            </div>
+          </div>
+
+          {/* Sound FX toggle */}
+          <div className="modal-row">
+            <span className="modal-label">Sound FX</span>
+            <div className="settings-options">
+              <button
+                className={`settings-opt${soundEnabled ? ' active' : ''}`}
+                onClick={() => onSoundEnabled(true)}
+              >
+                On
+              </button>
+              <button
+                className={`settings-opt${!soundEnabled ? ' active' : ''}`}
+                onClick={() => onSoundEnabled(false)}
+              >
+                Off
+              </button>
+            </div>
+          </div>
+
+          {/* Music toggle */}
+          <div className="modal-row">
+            <span className="modal-label">Music</span>
+            <div className="settings-options">
+              <button
+                className={`settings-opt${musicEnabled ? ' active' : ''}`}
+                onClick={() => onMusicEnabled(true)}
+              >
+                On
+              </button>
+              <button
+                className={`settings-opt${!musicEnabled ? ' active' : ''}`}
+                onClick={() => onMusicEnabled(false)}
+              >
+                Off
+              </button>
             </div>
           </div>
 

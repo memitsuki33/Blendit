@@ -55,7 +55,6 @@ function bfsGroup(board, startRow, startCol, visited) {
 }
 
 // Merge N tiles of color C → color ((C - 1 + N - 1) % COLOR_COUNT) + 1
-// Example: 2 Reds (1) → Orange (2), 3 Reds → Yellow (3), cycles back after Violet
 function mergedColor(baseColor, groupSize) {
   return ((baseColor - 1 + groupSize - 1) % COLOR_COUNT) + 1;
 }
@@ -207,6 +206,8 @@ export function createInitialState(startLevel) {
     lastChainCount: 0,
     heldValue: null,
     holdUsed: false,
+    turns: 0,
+    timedGarbageThisTurn: false,
   };
 }
 
@@ -274,7 +275,6 @@ export function gameReducer(state, action) {
       const { currentPiece, heldValue, nextPieceValue, board } = state;
       const spawnCol = Math.floor(COLS / 2);
       if (heldValue === null) {
-        // Nothing held — stash current, promote next
         const newNext = getNextPieceValue(board);
         return {
           ...state,
@@ -284,7 +284,6 @@ export function gameReducer(state, action) {
           nextPieceValue: newNext,
         };
       } else {
-        // Swap current with held
         return {
           ...state,
           heldValue: currentPiece.value,
@@ -308,6 +307,7 @@ function lockPiece(state) {
     currentPiece, board, score, level, startLevel,
     totalGarbageSent, pendingIncoming, pendingIncomingPool,
     mergeStreak = 0, streakMilestone = 0,
+    turns = 0,
   } = state;
 
   const newBoard = board.map(r => [...r]);
@@ -324,12 +324,24 @@ function lockPiece(state) {
   const garbageToSend = Math.floor(chainCount / 3) + streakBonus;
   const newTotalGarbage = totalGarbageSent + garbageToSend;
   const newScore = score + mergeScoreVal;
+  const newTurns = turns + 1;
 
   let finalBoard = mergedBoard;
   let garbageKill = false;
-  if (pendingIncoming > 0) {
-    const pool = getGarbagePool(mergedBoard);
-    const result = addGarbageRows(mergedBoard, pendingIncoming, pool);
+
+  // Every 5 turns: add 1 timed garbage row (with 1 colored gap tile to clear it)
+  const timedGarbageThisTurn = newTurns % 5 === 0;
+  if (timedGarbageThisTurn) {
+    const pool = getGarbagePool(finalBoard);
+    const gr = addGarbageRows(finalBoard, 1, pool);
+    finalBoard = gr.board;
+    if (gr.gameOver) garbageKill = true;
+  }
+
+  // Pending incoming (battle mode)
+  if (!garbageKill && pendingIncoming > 0) {
+    const pool = getGarbagePool(finalBoard);
+    const result = addGarbageRows(finalBoard, pendingIncoming, pool);
     finalBoard = result.board;
     if (result.gameOver) garbageKill = true;
   }
@@ -354,6 +366,8 @@ function lockPiece(state) {
       streakMilestone: newStreakMilestone,
       lastChainCount: chainCount,
       holdUsed: false,
+      turns: newTurns,
+      timedGarbageThisTurn,
     };
   }
 
@@ -373,5 +387,7 @@ function lockPiece(state) {
     streakMilestone: newStreakMilestone,
     lastChainCount: chainCount,
     holdUsed: false,
+    turns: newTurns,
+    timedGarbageThisTurn,
   };
 }

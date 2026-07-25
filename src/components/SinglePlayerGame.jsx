@@ -1,9 +1,10 @@
-import React, { useEffect, useCallback, useState } from 'react';
+import React, { useEffect, useCallback, useState, useRef } from 'react';
 import { useGameEngine } from '../hooks/useGameEngine.js';
 import GameBoard from './GameBoard.jsx';
 import InfoPanel from './InfoPanel.jsx';
 import ColorSequenceModal from './ColorSequenceModal.jsx';
-import { playMove, playHardDrop } from '../utils/soundEffects.js';
+import SettingsModal from './SettingsModal.jsx';
+import { playMove, playHardDrop, playTimedGarbage } from '../utils/soundEffects.js';
 
 function isMobile() {
   return (
@@ -12,7 +13,12 @@ function isMobile() {
   );
 }
 
-export default function SinglePlayerGame({ onBack, animSpeed = 'normal', onAnimSpeed }) {
+export default function SinglePlayerGame({
+  onBack,
+  animSpeed = 'normal', onAnimSpeed,
+  soundEnabled, onSoundEnabled,
+  musicEnabled, onMusicEnabled,
+}) {
   if (isMobile()) {
     return (
       <div className="mobile-pc-block">
@@ -33,13 +39,23 @@ export default function SinglePlayerGame({ onBack, animSpeed = 'normal', onAnimS
   });
 
   const [showColorGuide, setShowColorGuide] = useState(true);
+  const [showSettings, setShowSettings] = useState(false);
+
+  // Sound for timed garbage
+  const prevTurnsRef = useRef(0);
+  useEffect(() => {
+    if (state.timedGarbageThisTurn && state.turns !== prevTurnsRef.current) {
+      playTimedGarbage();
+    }
+    prevTurnsRef.current = state.turns;
+  }, [state.turns, state.timedGarbageThisTurn]);
 
   const handleKey = useCallback(
     (e) => {
       if (['ArrowLeft', 'ArrowRight', 'ArrowDown', 'ArrowUp', ' '].includes(e.key)) {
         e.preventDefault();
       }
-      if (showColorGuide || state.gameOver) return;
+      if (showColorGuide || showSettings || state.gameOver) return;
       switch (e.key) {
         case 'ArrowLeft':
         case 'a': case 'A':
@@ -56,9 +72,11 @@ export default function SinglePlayerGame({ onBack, animSpeed = 'normal', onAnimS
           playHardDrop(); hardDrop(); break;
         case 'r': case 'R':
           hold(); break;
+        case 'Escape':
+          setShowSettings(s => !s); break;
       }
     },
-    [showColorGuide, state.gameOver, moveLeft, moveRight, softDrop, hardDrop, hold]
+    [showColorGuide, showSettings, state.gameOver, moveLeft, moveRight, softDrop, hardDrop, hold]
   );
 
   useEffect(() => {
@@ -66,11 +84,12 @@ export default function SinglePlayerGame({ onBack, animSpeed = 'normal', onAnimS
     return () => window.removeEventListener('keydown', handleKey);
   }, [handleKey]);
 
-  // Show color guide again on restart
   const handleRestart = useCallback((level) => {
     restart(level ?? 0);
     setShowColorGuide(true);
   }, [restart]);
+
+  const checkpointLevel = Math.floor(state.level / 5) * 5;
 
   return (
     <>
@@ -82,6 +101,15 @@ export default function SinglePlayerGame({ onBack, animSpeed = 'normal', onAnimS
         Back
       </button>
 
+      <button
+        className="btn btn-ghost btn-sm"
+        style={{ position: 'fixed', top: 12, right: 12, zIndex: 50 }}
+        onClick={() => setShowSettings(true)}
+        title="Settings (Esc)"
+      >
+        Settings
+      </button>
+
       <div className="game-wrapper">
         <div className="player-section">
           <GameBoard state={state} animSpeed={animSpeed} />
@@ -91,6 +119,21 @@ export default function SinglePlayerGame({ onBack, animSpeed = 'normal', onAnimS
 
       {showColorGuide && (
         <ColorSequenceModal onClose={() => setShowColorGuide(false)} actionLabel="Play!" />
+      )}
+
+      {showSettings && (
+        <SettingsModal
+          onClose={() => setShowSettings(false)}
+          animSpeed={animSpeed}
+          onAnimSpeed={onAnimSpeed}
+          soundEnabled={soundEnabled}
+          onSoundEnabled={onSoundEnabled}
+          musicEnabled={musicEnabled}
+          onMusicEnabled={onMusicEnabled}
+          onReset={() => handleRestart(0)}
+          checkpointLevel={checkpointLevel}
+          onLoadLevel={(lvl) => handleRestart(lvl)}
+        />
       )}
     </>
   );

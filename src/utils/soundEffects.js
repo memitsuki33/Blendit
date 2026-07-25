@@ -9,8 +9,6 @@ function ac() {
 }
 
 // Plays a single oscillator note with exponential gain decay.
-// type: OscillatorType, freq/freqEnd: Hz, t: start time (ac.currentTime),
-// dur: seconds, gain: peak volume (0–1)
 function tone(type, freq, t, dur, gain = 0.25, freqEnd = null) {
   const c = ac();
   const g = c.createGain();
@@ -54,16 +52,81 @@ function noise(t, dur, gain = 0.3, filterFreq = 1200) {
   src.stop(t + dur + 0.01);
 }
 
-// ─── Public API ─────────────────────────────────────────────────────────────
+// ─── Global flags ────────────────────────────────────────────────────────────
+
+let _soundEnabled = true;
+let _musicEnabled = false;
+
+export function setSoundEnabled(val) {
+  _soundEnabled = val;
+}
+
+export function setMusicEnabled(val) {
+  _musicEnabled = val;
+  if (val) startMusic();
+  else stopMusic();
+}
+
+// ─── Music ───────────────────────────────────────────────────────────────────
+
+// Simple 16-step chiptune loop in C major (0 = rest)
+const MUSIC_SEQ = [
+  523.25, 659.25, 783.99, 659.25,
+  523.25, 392.00, 440.00, 0,
+  523.25, 659.25, 783.99, 1046.50,
+  783.99, 659.25, 523.25, 0,
+];
+const MUSIC_STEP_DUR = 0.18; // seconds per note slot
+const MUSIC_NOTE_DUR = 0.13;
+const MUSIC_NOTE_GAIN = 0.06;
+
+let _musicInterval = null;
+let _musicStep = 0;
+let _musicNextTime = 0;
+
+function scheduleMusicNotes() {
+  if (!_musicEnabled || !_musicInterval) return;
+  const c = ac();
+  const lookAhead = 0.15;
+  while (_musicNextTime < c.currentTime + lookAhead) {
+    const freq = MUSIC_SEQ[_musicStep % MUSIC_SEQ.length];
+    if (freq > 0) {
+      tone('square', freq, _musicNextTime, MUSIC_NOTE_DUR, MUSIC_NOTE_GAIN);
+    }
+    _musicNextTime += MUSIC_STEP_DUR;
+    _musicStep++;
+  }
+}
+
+export function startMusic() {
+  if (_musicInterval) return;
+  try {
+    const c = ac();
+    _musicNextTime = c.currentTime + 0.1;
+    _musicStep = 0;
+    _musicInterval = setInterval(scheduleMusicNotes, 50);
+  } catch {}
+}
+
+export function stopMusic() {
+  if (_musicInterval) {
+    clearInterval(_musicInterval);
+    _musicInterval = null;
+  }
+}
+
+// ─── Public SFX API ──────────────────────────────────────────────────────────
 
 /** Tile move left / right — crisp blip. */
 export function playMove() {
+  if (!_soundEnabled) return;
   const t = ac().currentTime;
   tone('square', 330, t, 0.03, 0.18);
 }
 
 /** Hard drop — downward sweep + noise thud. */
 export function playHardDrop() {
+  if (!_soundEnabled) return;
   const t = ac().currentTime;
   tone('square', 520, t, 0.12, 0.35, 60);
   noise(t, 0.07, 0.25, 800);
@@ -71,6 +134,7 @@ export function playHardDrop() {
 
 /** Merge — short two-note chime on every merge. */
 export function playMerge() {
+  if (!_soundEnabled) return;
   const t = ac().currentTime;
   tone('sine', 440, t,        0.09, 0.22);
   tone('sine', 659, t + 0.06, 0.09, 0.18);
@@ -79,25 +143,23 @@ export function playMerge() {
 /**
  * Combo arpeggio — number of notes and speed scale with the streak.
  * mergeStreak < 2: silent (no combo display).
- * mergeStreak 2: 2 notes  (C5 G5)
- * mergeStreak 3: 3 notes  (C5 E5 G5)
- * mergeStreak 4: 4 notes  (C5 E5 G5 C6)
- * mergeStreak 5+: 5 notes fast (C5 E5 G5 C6 E6)
  */
 export function playCombo(mergeStreak) {
+  if (!_soundEnabled) return;
   if (mergeStreak < 2) return;
   const t = ac().currentTime;
   const allNotes = [523.25, 659.25, 783.99, 1046.5, 1318.5]; // C5 E5 G5 C6 E6
   const count = Math.min(mergeStreak, 5);
   const step  = mergeStreak >= 5 ? 0.045 : 0.065;
   const dur   = mergeStreak >= 5 ? 0.10  : 0.13;
-  const gain  = 0.20 + (count - 2) * 0.04; // slightly louder for bigger combos
+  const gain  = 0.20 + (count - 2) * 0.04;
   const notes = allNotes.slice(0, count);
   notes.forEach((freq, i) => tone('square', freq, t + i * step, dur, gain));
 }
 
 /** Level-up fanfare — four-note ascending square-wave arpeggio. */
 export function playLevelUp() {
+  if (!_soundEnabled) return;
   const t = ac().currentTime;
   const seq = [523.25, 659.25, 783.99, 1046.5]; // C5 E5 G5 C6
   seq.forEach((freq, i) => {
@@ -108,18 +170,18 @@ export function playLevelUp() {
 
 /** Game over — descending sad melody. */
 export function playGameOver() {
+  if (!_soundEnabled) return;
   const t = ac().currentTime;
-  // G4 E4 C4 … each note hangs longer
   const seq = [392, 329.63, 261.63, 196];
   seq.forEach((freq, i) => {
     tone('square', freq, t + i * 0.18, 0.22, 0.28);
   });
-  // Low thud at the end
   tone('sine', 80, t + seq.length * 0.18, 0.35, 0.35, 40);
 }
 
 /** Garbage sent — sharp aggressive attack burst. */
 export function playGarbageSend() {
+  if (!_soundEnabled) return;
   const t = ac().currentTime;
   tone('sawtooth', 880, t,        0.04, 0.30, 200);
   tone('sawtooth', 440, t + 0.04, 0.06, 0.20, 100);
@@ -128,19 +190,30 @@ export function playGarbageSend() {
 
 /** Garbage received — warning alarm pulse (two short buzzes). */
 export function playGarbageReceive() {
+  if (!_soundEnabled) return;
   const t = ac().currentTime;
   tone('square', 220, t,        0.06, 0.30, 180);
   tone('square', 220, t + 0.10, 0.06, 0.25, 180);
 }
 
+/** Timed garbage drop every 5 turns — low thud. */
+export function playTimedGarbage() {
+  if (!_soundEnabled) return;
+  const t = ac().currentTime;
+  tone('sawtooth', 160, t, 0.08, 0.28, 80);
+  noise(t, 0.05, 0.18, 400);
+}
+
 /** Button click sound. */
 export function playClick() {
+  if (!_soundEnabled) return;
   const t = ac().currentTime;
   tone('square', 440, t, 0.04, 0.18, 380);
 }
 
 /** Button hover sound. */
 export function playHover() {
+  if (!_soundEnabled) return;
   const t = ac().currentTime;
   tone('sine', 660, t, 0.03, 0.08);
 }

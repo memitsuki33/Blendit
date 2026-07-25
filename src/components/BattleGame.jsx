@@ -1,8 +1,9 @@
-import React, { useEffect, useCallback, useRef } from 'react';
+import React, { useEffect, useCallback, useRef, useState } from 'react';
 import { useGameEngine } from '../hooks/useGameEngine.js';
 import GameBoard from './GameBoard.jsx';
 import InfoPanel from './InfoPanel.jsx';
-import { playMove, playHardDrop, playGarbageSend, playGarbageReceive } from '../utils/soundEffects.js';
+import SettingsModal from './SettingsModal.jsx';
+import { playMove, playHardDrop, playGarbageSend, playGarbageReceive, playTimedGarbage } from '../utils/soundEffects.js';
 
 function isMobile() {
   return (
@@ -10,8 +11,13 @@ function isMobile() {
     (navigator.maxTouchPoints > 0 || window.innerWidth < 768)
   );
 }
-//green bean mans
-export default function BattleGame({ level, onBack }) {
+
+export default function BattleGame({
+  level, onBack,
+  animSpeed = 'normal', onAnimSpeed,
+  soundEnabled, onSoundEnabled,
+  musicEnabled, onMusicEnabled,
+}) {
   if (isMobile()) {
     return (
       <div className="mobile-pc-block">
@@ -25,9 +31,10 @@ export default function BattleGame({ level, onBack }) {
       </div>
     );
   }
+
   const p1 = useGameEngine({ startLevel: level, mode: 'battle' });
   const p2 = useGameEngine({ startLevel: level, mode: 'battle' });
-
+  const [showSettings, setShowSettings] = useState(false);
 
   const p1GarbageProcessed = useRef(0);
   const p2GarbageProcessed = useRef(0);
@@ -67,6 +74,15 @@ export default function BattleGame({ level, onBack }) {
     p2PendingRef.current = p2.state.pendingIncoming;
   }, [p2.state.pendingIncoming]);
 
+  // Timed garbage sound for P1
+  const p1TurnsRef = useRef(0);
+  useEffect(() => {
+    if (p1.state.timedGarbageThisTurn && p1.state.turns !== p1TurnsRef.current) {
+      playTimedGarbage();
+    }
+    p1TurnsRef.current = p1.state.turns;
+  }, [p1.state.turns, p1.state.timedGarbageThisTurn]);
+
   // When one player dies, immediately end the other player's game too
   useEffect(() => {
     if (p1.state.gameOver && !p2.state.gameOver) {
@@ -83,7 +99,6 @@ export default function BattleGame({ level, onBack }) {
   const p1Dead = p1.state.gameOver;
   const p2Dead = p2.state.gameOver;
   const gameEnded = p1Dead || p2Dead;
-  // If both died on the same tick it's a draw; otherwise the survivor wins
   const winner = p1Dead && p2Dead
     ? (p1.state.score > p2.state.score ? 'Player 1' : p2.state.score > p1.state.score ? 'Player 2' : 'Draw')
     : p1Dead ? 'Player 2'
@@ -97,6 +112,11 @@ export default function BattleGame({ level, onBack }) {
         e.preventDefault();
       }
 
+      if (key === 'Escape') {
+        setShowSettings(s => !s);
+        return;
+      }
+
       if (key === 'Enter' && gameEnded) {
         p1GarbageProcessed.current = 0;
         p2GarbageProcessed.current = 0;
@@ -105,7 +125,7 @@ export default function BattleGame({ level, onBack }) {
         return;
       }
 
-      if (!gameEnded) {
+      if (!gameEnded && !showSettings) {
         // Player 1: WASD + R = hold
         switch (key) {
           case 'a': case 'A': playMove(); p1.moveLeft(); break;
@@ -125,7 +145,7 @@ export default function BattleGame({ level, onBack }) {
         }
       }
     },
-    [p1, p2, gameEnded, level]
+    [p1, p2, gameEnded, level, showSettings]
   );
 
   useEffect(() => {
@@ -149,6 +169,16 @@ export default function BattleGame({ level, onBack }) {
         style={{ position: 'fixed', top: 12, left: 12, zIndex: 100 }}
       >
         Back
+      </button>
+
+      {/* Settings button pinned to top-right */}
+      <button
+        className="btn btn-ghost btn-sm"
+        onClick={() => setShowSettings(true)}
+        style={{ position: 'fixed', top: 12, right: 12, zIndex: 100 }}
+        title="Settings (Esc)"
+      >
+        Settings
       </button>
 
       <div className="back-row" style={{ justifyContent: 'center' }}>
@@ -178,7 +208,7 @@ export default function BattleGame({ level, onBack }) {
               mode="battle"
               pendingGarbage={p1.state.pendingIncoming}
             />
-            <GameBoard state={p1.state} animSpeed="normal" />
+            <GameBoard state={p1.state} animSpeed={animSpeed} />
           </div>
         </div>
 
@@ -190,7 +220,7 @@ export default function BattleGame({ level, onBack }) {
         <div className="player-section p2-section">
           <span className="player-label p2">/ = Hold  |  Player 2 — Arrows / Space</span>
           <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
-            <GameBoard state={p2.state} animSpeed="normal" />
+            <GameBoard state={p2.state} animSpeed={animSpeed} />
             <InfoPanel
               state={p2.state}
               mode="battle"
@@ -199,6 +229,18 @@ export default function BattleGame({ level, onBack }) {
           </div>
         </div>
       </div>
+
+      {showSettings && (
+        <SettingsModal
+          onClose={() => setShowSettings(false)}
+          animSpeed={animSpeed}
+          onAnimSpeed={onAnimSpeed}
+          soundEnabled={soundEnabled}
+          onSoundEnabled={onSoundEnabled}
+          musicEnabled={musicEnabled}
+          onMusicEnabled={onMusicEnabled}
+        />
+      )}
     </div>
   );
 }

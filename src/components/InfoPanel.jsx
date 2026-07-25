@@ -10,11 +10,11 @@ export default function InfoPanel({ state, mode = 'single', pendingGarbage = 0 }
 
   // Score-to-next-level progress (single player only)
   let progressPct = 0;
-  let nextThreshold = null;
+  let needed = null;
   if (mode === 'single' && level < MAX_LEVEL) {
     const currentThreshold = levelThreshold(level);
     const nextT = levelThreshold(level + 1);
-    nextThreshold = nextT;
+    needed = Math.max(0, nextT - score);
     progressPct = Math.min(1, Math.max(0, (score - currentThreshold) / (nextT - currentThreshold)));
   }
 
@@ -43,7 +43,9 @@ export default function InfoPanel({ state, mode = 'single', pendingGarbage = 0 }
           <div className="score-bar-track">
             <div className="score-bar-fill" style={{ width: `${progressPct * 100}%` }} />
           </div>
-          <span className="score-bar-label">{formatScore(nextThreshold)}</span>
+          <span className="score-bar-label" style={{ color: 'var(--text-dim)' }}>
+            {formatScore(needed)} to go
+          </span>
         </div>
       )}
 

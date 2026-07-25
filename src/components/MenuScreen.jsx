@@ -5,6 +5,8 @@ import SettingsModal from './SettingsModal.jsx';
 export default function MenuScreen({
   onSinglePlayerPC, onSinglePlayerMobile, onBattlePC, onBattleMobile, onTutorial,
   animSpeed, onAnimSpeed,
+  soundEnabled, onSoundEnabled,
+  musicEnabled, onMusicEnabled,
 }) {
   const [showSettings, setShowSettings] = useState(false);
 
@@ -40,6 +42,10 @@ export default function MenuScreen({
           onClose={() => setShowSettings(false)}
           animSpeed={animSpeed}
           onAnimSpeed={onAnimSpeed}
+          soundEnabled={soundEnabled}
+          onSoundEnabled={onSoundEnabled}
+          musicEnabled={musicEnabled}
+          onMusicEnabled={onMusicEnabled}
         />
       )}
     </div>
