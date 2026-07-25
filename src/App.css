@@ -1252,41 +1252,103 @@ kbd {
 
 /* ===== COLOR SEQUENCE MODAL ===== */
 .color-seq-card {
-  max-width: 520px;
-  width: calc(100vw - 32px);
+  max-width: 500px;
+  width: calc(100vw - 24px);
 }
 
-.color-seq-row {
+/* Enhanced guide body */
+.csg-body {
+  padding: 16px;
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: 4px;
-  flex-wrap: wrap;
-  justify-content: center;
+  max-height: calc(100svh - 160px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
-.color-seq-tile {
-  width: 44px;
-  height: 52px;
-  border-radius: 6px;
+/* Cycle row */
+.csg-cycle-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 3px;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+}
+.csg-cycle-row::-webkit-scrollbar { display: none; }
+
+.csg-cycle-cell {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 2px;
+  gap: 3px;
   flex-shrink: 0;
 }
 
-.color-seq-cycle {
-  opacity: 0.6;
-  outline: 2px dashed rgba(255,255,255,0.3);
-  outline-offset: 2px;
+.csg-big-tile {
+  width: 38px;
+  height: 42px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 1rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+  flex-shrink: 0;
 }
 
-.color-seq-arrow {
-  font-size: 0.8rem;
+.csg-color-name {
+  font-size: 0.55rem;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: 0.3px;
+  text-align: center;
+}
+
+.csg-color-pts {
+  font-size: 0.52rem;
+  font-weight: 700;
+  color: var(--text-dim);
+  text-align: center;
+  white-space: nowrap;
+}
+
+.csg-cycle-arrow {
+  font-size: 1rem;
   color: var(--text-dim);
   font-weight: 900;
   flex-shrink: 0;
+  padding-top: 10px;
+}
+
+.csg-wrap-arrow {
+  color: var(--accent);
+  font-size: 0.9rem;
+}
+
+/* Tips */
+.csg-tips {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.csg-tip {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 0.74rem;
+  color: var(--text-dim);
+  line-height: 1.55;
+}
+
+.csg-tip-icon {
+  font-size: 0.82rem;
+  flex-shrink: 0;
+  margin-top: 1px;
 }
 
 /* ===== WIN BANNER variants ===== */
