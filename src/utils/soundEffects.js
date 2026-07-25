@@ -218,7 +218,7 @@ export function playLock() {
   noise(t, 0.04, 0.12, 500);
 }
 
-/** Timed garbage drop every 5 turns — low thud. */
+/** Timed garbage drop every 10 turns — low thud. */
 export function playTimedGarbage() {
   if (!_soundEnabled) return;
   const t = ac().currentTime;

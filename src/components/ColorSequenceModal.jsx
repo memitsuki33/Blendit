@@ -79,13 +79,13 @@ export default function ColorSequenceModal({ onClose, actionLabel = 'Play!' }) {
   // Pre-compute merge results for N reds (index 0-based in COLORS)
   // N tiles → advance N-1 steps
   const mergeRows = [
-    { count: 2, resultIdx: 1, note: '+1 step  →  Orange (+200 pts)' },
-    { count: 3, resultIdx: 2, note: '+2 steps →  Yellow (+400 pts)' },
-    { count: 4, resultIdx: 3, note: '+3 steps →  Green  (+800 pts)' },
-    { count: 5, resultIdx: 4, note: '+4 steps →  Blue  (+1.6K pts)' },
-    { count: 6, resultIdx: 5, note: '+5 steps →  Indigo (+3.2K pts)' },
-    { count: 7, resultIdx: 6, note: '+6 steps →  Violet (+6.4K pts)' },
-    { count: 8, resultIdx: 0, note: '+7 steps →  Red (wraps!)' },
+    { count: 2, resultIdx: 1, note: 'Step up once. Easiest merge — happens constantly.' },
+    { count: 3, resultIdx: 2, note: 'Skip two steps. Great for chaining into existing tiles.' },
+    { count: 4, resultIdx: 3, note: 'Leap three steps. Stack columns to set this up.' },
+    { count: 5, resultIdx: 4, note: 'Four steps up. Takes patience — worth the setup.' },
+    { count: 6, resultIdx: 5, note: 'Five steps. Rare but devastating in combos.' },
+    { count: 7, resultIdx: 6, note: 'All the way to Violet — 6.4K pts in one merge!' },
+    { count: 8, resultIdx: 0, note: 'Wraps back to Red. Cycle starts over.' },
   ];
 
   return (
@@ -122,8 +122,8 @@ export default function ColorSequenceModal({ onClose, actionLabel = 'Play!' }) {
           {/* ── Section 2: Merge Rules ── */}
           <SectionLabel>Merge Rules — using Red as example</SectionLabel>
           <p style={{ fontSize: '0.73rem', color: 'var(--text-dim)', marginBottom: 8, lineHeight: 1.5 }}>
-            N same-color tiles touching → <strong style={{ color: 'var(--text)' }}>1 tile, N−1 steps forward</strong> in the cycle.
-            Works the same for any color.
+            N connected same-color tiles → <strong style={{ color: 'var(--text)' }}>1 tile, N−1 steps forward</strong> in the cycle.
+            Applies to every color — group more tiles for a bigger jump and higher score.
           </p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
             {mergeRows.map(({ count, resultIdx, note }) => (
@@ -152,27 +152,31 @@ export default function ColorSequenceModal({ onClose, actionLabel = 'Play!' }) {
                   : <div key={i} style={{ width: 20, height: 20, borderRadius: 3, background: '#555' }} />
               ))}
             </div>
-            <span style={{ fontSize: '0.72rem', color: 'var(--text-dim)', lineHeight: 1.5 }}>
-              Gray rows with <strong style={{ color: 'var(--text)' }}>1 colored gap</strong>.
-              Merge the gap tile and the <em>whole row vanishes</em>.
-              A new row drops every <strong style={{ color: 'var(--accent)' }}>5 turns</strong>.
+            <span style={{ fontSize: '0.72rem', color: 'var(--text-dim)', lineHeight: 1.6 }}>
+              Gray, non-mergeable rows with <strong style={{ color: 'var(--text)' }}>one colored gap tile</strong>.
+              Drop a matching color onto the gap — the <em>entire row disappears instantly</em>.
+              One row arrives every <strong style={{ color: 'var(--accent)' }}>10 turns</strong>, so clear each one before the next hits.
             </span>
           </div>
 
           {/* ── Section 4: Tips ── */}
-          <SectionLabel>Tips</SectionLabel>
+          <SectionLabel>Strategy Tips</SectionLabel>
           <div className="csg-tips">
             <div className="csg-tip">
               <span className="csg-tip-icon">⛓</span>
-              <span>Merges <strong>cascade</strong> — a settled tile that touches same-color neighbors merges again, free.</span>
+              <span><strong>Cascades are free score.</strong> After a merge, tiles fall and recheck — a single well-placed drop can trigger 4 or 5 chain merges automatically.</span>
+            </div>
+            <div className="csg-tip">
+              <span className="csg-tip-icon">🎯</span>
+              <span><strong>Drop position is the result position.</strong> The merged tile lands exactly where you dropped — use this to aim your cascade into the next group.</span>
             </div>
             <div className="csg-tip">
               <span className="csg-tip-icon">🤚</span>
-              <span><strong>Hold (R / /)</strong> — stash the current tile and swap it back in later. Once per drop.</span>
+              <span><strong>Hold (R / /)</strong> banks the current tile without placing it. Dodge a bad color or save a tile for an incoming match. Resets after each drop.</span>
             </div>
             <div className="csg-tip">
               <span className="csg-tip-icon">⚔</span>
-              <span>Every <strong>3 combo steps</strong> in Battle mode sends 1 garbage row to your opponent.</span>
+              <span><strong>Battle attacks:</strong> every 3 cascade steps sends 1 garbage row to your opponent. A 9-chain sends 3 rows at once — overwhelm them before they recover.</span>
             </div>
           </div>
 

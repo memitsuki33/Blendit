@@ -329,8 +329,8 @@ function lockPiece(state) {
   let finalBoard = mergedBoard;
   let garbageKill = false;
 
-  // Every 5 turns: add 1 timed garbage row (with 1 colored gap tile to clear it)
-  const timedGarbageThisTurn = newTurns % 5 === 0;
+  // Every 10 turns: add 1 timed garbage row (with 1 colored gap tile to clear it)
+  const timedGarbageThisTurn = newTurns % 10 === 0;
   if (timedGarbageThisTurn) {
     const pool = getGarbagePool(finalBoard);
     const gr = addGarbageRows(finalBoard, 1, pool);

@@ -118,29 +118,34 @@ export default function Tutorial({ onBack }) {
           <div className="tutorial-content">
             <p>
               The board is <strong>10 columns wide</strong> and <strong>20 rows tall</strong>.
-              A single colored tile falls from the top each turn — move it left or right,
-              then drop it. Tiles of the <strong>same color</strong> that touch
-              (horizontally or vertically) <strong>automatically merge</strong>.
+              One colored tile falls at a time — move it left or right, then drop it into a column.
+              Tiles of the <strong>same color</strong> that are touching (horizontally or vertically)
+              <strong> automatically merge</strong> into a higher color the moment they meet.
             </p>
 
             {/* Color strip */}
-            <div style={{ display: 'flex', gap: 6, marginTop: 16, flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', gap: 6, marginTop: 14, flexWrap: 'wrap' }}>
               {[1, 2, 3, 4, 5, 6, 7].map(v => <Tile key={v} value={v} size={42} />)}
             </div>
             <p style={{ marginTop: 6, fontSize: '0.75rem', color: 'var(--text-dim)', fontWeight: 700 }}>
-              Red → Orange → Yellow → Green → Blue → Indigo → Violet (then back to Red)
+              Red → Orange → Yellow → Green → Blue → Indigo → Violet → Red (repeats)
             </p>
 
             <p style={{ marginTop: 12, color: 'var(--text-dim)', fontSize: '0.82rem' }}>
-              A <strong style={{ color: 'var(--text)' }}>ghost outline</strong> shows where
-              the tile will land — plan your drop before committing.
-              The <strong style={{ color: 'var(--text)' }}>Next</strong> tile is previewed
-              in the side panel so you can think one step ahead.
+              <strong style={{ color: 'var(--text)' }}>Ghost outline</strong> — the faint tile
+              below your piece shows exactly where it will land. Use it to line up merges
+              before you commit. The <strong style={{ color: 'var(--text)' }}>Next</strong> preview
+              in the side panel shows what's coming so you can plan two moves ahead.
             </p>
             <p style={{ color: 'var(--text-dim)', fontSize: '0.82rem' }}>
-              Use <strong style={{ color: 'var(--text)' }}>Hold</strong> (R key) to stash
-              the current tile and swap it back in later — once per drop.
-              Plan combos by saving a key color for the right moment.
+              <strong style={{ color: 'var(--text)' }}>Hold (R)</strong> — banks the current
+              tile without placing it. Swap it back in at any time. Use Hold to skip a color
+              that doesn't fit or save a key tile to complete a group — resets after each drop.
+            </p>
+            <p style={{ color: 'var(--text-dim)', fontSize: '0.82rem' }}>
+              <strong style={{ color: 'var(--text)' }}>Goal:</strong> survive as long as
+              possible while building the highest score you can. The game ends when a new tile
+              can't spawn — keep the board clear and chase Violet merges.
             </p>
           </div>
         )}
@@ -150,32 +155,38 @@ export default function Tutorial({ onBack }) {
           <div className="tutorial-content">
             <p>
               When <strong>2 or more same-color tiles touch</strong>, they instantly merge
-              into <strong>1 tile advanced in the cycle</strong>.
-              The more tiles in the group, the bigger the jump:
+              into <strong>1 tile advanced in the color cycle</strong>.
+              More tiles in the group = a bigger jump forward:
             </p>
             <div className="merge-examples">
               <MergeExample
-                label="2 Reds → Orange"
+                label="2 Reds → Orange (+1 step)"
                 before={[1, 1]}       beforeCols={2}
                 after={[2]}           afterCols={1}
               />
               <MergeExample
-                label="3 Reds → Yellow"
+                label="3 Reds → Yellow (+2 steps)"
                 before={[1, 1, 1, 0]} beforeCols={2}
                 after={[0, 3]}        afterCols={2}
               />
               <MergeExample
-                label="4 Reds → Green"
+                label="4 Reds → Green (+3 steps)"
                 before={[0,1,1,1,1,0]} beforeCols={3}
                 after={[0,4,0,0,0,0]}  afterCols={3}
               />
             </div>
             <p style={{ marginTop: 12, color: 'var(--text-dim)', fontSize: '0.82rem' }}>
               <strong style={{ color: 'var(--text)' }}>Formula:</strong> N tiles of color C
-              → 1 tile advanced N−1 steps in the cycle.
-              After a merge, gravity drops remaining tiles. If the new tile touches
-              a same-color neighbor, it merges again automatically — a free
-              <strong style={{ color: 'var(--text)' }}> cascade</strong>.
+              → 1 tile, N−1 steps forward. After a merge, gravity pulls tiles down and
+              the board rechecks — if the merged tile now touches another same-color group,
+              it merges again for free. These <strong style={{ color: 'var(--text)' }}>cascades</strong> are
+              the key to high scores.
+            </p>
+            <p style={{ color: 'var(--text-dim)', fontSize: '0.82rem' }}>
+              <strong style={{ color: 'var(--text)' }}>Drop position = result position.</strong> The
+              merged tile lands where you placed your piece. Drop left of a group and
+              the result sits left; drop right and it stays right. Use this to steer
+              your cascade into the next match deliberately.
             </p>
           </div>
         )}
@@ -184,11 +195,12 @@ export default function Tutorial({ onBack }) {
         {page === 2 && (
           <div className="tutorial-content">
             <p>
-              Bigger groups jump further and score more. Here's the full scoring table:
+              Each color has a point value — higher colors score exponentially more.
+              A single Violet merge is worth <strong>64× a Red merge</strong>:
             </p>
-            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginTop: 10, marginBottom: 10 }}>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 10, marginBottom: 12 }}>
               {[1, 2, 3, 4, 5, 6, 7].map(v => (
-                <div key={v} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5 }}>
+                <div key={v} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
                   <Tile value={v} size={38} />
                   <span style={{ fontSize: '0.65rem', fontWeight: 800, color: 'var(--text-dim)' }}>
                     {COLOR_SCORES[v] >= 1000 ? `${COLOR_SCORES[v] / 1000}K` : COLOR_SCORES[v]}
@@ -199,22 +211,23 @@ export default function Tutorial({ onBack }) {
 
             <div className="merge-examples">
               <MergeExample
-                label="2 Oranges → Yellow (+400)"
+                label="2 Oranges → Yellow (400 pts)"
                 before={[2, 2]}        beforeCols={2}
                 after={[3]}            afterCols={1}
               />
               <MergeExample
-                label="3 Blues → Violet (+6.4K)"
+                label="3 Blues → Violet (6.4K pts!)"
                 before={[5, 5, 5, 0]}  beforeCols={2}
                 after={[0, 7]}         afterCols={2}
               />
             </div>
 
             <p style={{ marginTop: 10, fontSize: '0.82rem', color: 'var(--text-dim)' }}>
-              <strong style={{ color: 'var(--text)' }}>Chain combos</strong> — when one
-              merge causes another — multiply your score and send garbage in battle mode.
-              Build your board to set off 3, 4, or 5 cascades in a single drop.
-              After Violet, the cycle wraps back to Red.
+              <strong style={{ color: 'var(--text)' }}>Chain combos</strong> happen when one
+              merge cascades into another. Each step in a chain adds to your score and — in
+              Battle mode — sends garbage to your opponent. A 9-step chain sends 3 rows at once.
+              Build columns of matching colors and trigger them all with a single drop.
+              After Violet, the cycle wraps back to Red and you start climbing again.
             </p>
           </div>
         )}
@@ -262,14 +275,15 @@ export default function Tutorial({ onBack }) {
             <p>
               <strong>PC battle</strong> — two players share one keyboard on side-by-side boards.
               <strong> Mobile battle</strong> — play online against anyone using a room code.
-              The first player whose board fills to the top <strong>loses</strong>.
+              The first player whose board fills to the top <strong>loses</strong>. If both
+              fill up on the same piece, the higher score wins.
             </p>
 
-            <p style={{ marginTop: 10 }}>
+            <p style={{ marginTop: 8 }}>
               Build chain combos to attack. Every <strong>3 combo steps</strong> sends
               <strong> 1 garbage row</strong> to the opponent:
             </p>
-            <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start', marginTop: 8 }}>
+            <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start', marginTop: 6 }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
                 {[3, 6, 9, 12].map(c => (
                   <div key={c} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -282,18 +296,19 @@ export default function Tutorial({ onBack }) {
                 ))}
               </div>
               <div style={{ flex: 1, padding: '10px 12px', background: 'var(--bg)', borderRadius: 6, border: '1px solid var(--border)', fontSize: '0.77rem', color: 'var(--text-dim)', lineHeight: 1.8 }}>
-                <strong style={{ color: 'var(--text)' }}>Garbage rows</strong> rise from the
-                bottom — gray, non-mergeable, with <strong style={{ color: 'var(--text)' }}>1 colored gap tile</strong>.
-                Merge that gap tile and the <em>whole garbage row disappears</em>.
-                Lands on the opponent's next piece drop.
+                Garbage rows rise from the bottom — gray and unblendable, with
+                <strong style={{ color: 'var(--text)' }}> 1 colored gap tile</strong>.
+                Match a tile to that gap color and the <em>entire row vanishes</em>.
+                Rows land on the opponent's <em>next</em> piece drop, giving a brief window to react.
               </div>
             </div>
 
-            <p style={{ marginTop: 12, padding: '8px 12px', background: 'var(--bg)', borderRadius: 6, border: '1px solid var(--border)', fontSize: '0.78rem', color: 'var(--text-dim)', lineHeight: 1.7 }}>
+            <p style={{ marginTop: 10, padding: '8px 12px', background: 'var(--bg)', borderRadius: 6, border: '1px solid var(--border)', fontSize: '0.78rem', color: 'var(--text-dim)', lineHeight: 1.7 }}>
               <strong style={{ color: 'var(--accent)' }}>Timed garbage</strong> — every
-              <strong style={{ color: 'var(--text)' }}> 5 pieces</strong> placed, a garbage
-              row appears on <em>your own board</em> automatically (both players).
-              Each row has a colored gap — merge it to clear it before the next wave.
+              <strong style={{ color: 'var(--text)' }}> 10 pieces</strong>, one garbage row
+              rises on <em>every player's board</em> automatically, no matter what.
+              Clear the colored gap quickly — rows stack up fast and a buried board is
+              nearly impossible to recover from.
             </p>
           </div>
         )}
