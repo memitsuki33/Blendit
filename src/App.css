@@ -146,6 +146,131 @@ body {
   animation: fadeIn 0.3s ease;
 }
 
+/* Single-player variant: full-height scroll container */
+.level-select-single {
+  gap: 0;
+  width: 100%;
+  max-width: 420px;
+  height: calc(100svh - 32px);
+  max-height: 820px;
+}
+
+/* Make back-row full-width when inside single layout */
+.level-select-single .back-row {
+  width: 100%;
+  padding: 0 8px;
+  justify-content: space-between;
+}
+
+.ls-single-body {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 16px 16px 24px;
+  scrollbar-width: none;
+}
+.ls-single-body::-webkit-scrollbar { display: none; }
+
+.ls-single-desc {
+  color: var(--text-dim);
+  font-size: 0.84rem;
+  font-weight: 600;
+  text-align: center;
+  max-width: 280px;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ── Level jump section ── */
+.ls-jump-section {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.ls-jump-label {
+  font-size: 0.6rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  text-align: left;
+}
+
+/* Level 0 "Start fresh" big button */
+.ls-jump-start0 {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 12px 16px;
+  font-size: 1rem;
+}
+.ls-jump-start0-sub {
+  font-size: 0.68rem;
+  font-weight: 600;
+  opacity: 0.75;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+/* Scrollable grid of level rows */
+.ls-jump-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  width: 100%;
+}
+
+.ls-jump-row {
+  display: grid;
+  grid-template-columns: 48px 1fr 1fr 24px;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 9px 12px;
+  background: var(--panel-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+  text-align: left;
+}
+.ls-jump-row:hover {
+  background: var(--card-bg);
+  border-color: var(--accent);
+}
+
+.ls-jump-lv {
+  font-size: 0.85rem;
+  font-weight: 900;
+  color: var(--accent);
+}
+.ls-jump-speed {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-dim);
+}
+.ls-jump-score {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  text-align: right;
+}
+.ls-jump-play {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  text-align: right;
+}
+
 .level-select-screen h2 {
   font-size: 1.5rem;
   font-weight: 900;

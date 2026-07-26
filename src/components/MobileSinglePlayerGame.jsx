@@ -9,12 +9,13 @@ import { playTimedGarbage } from '../utils/soundEffects.js';
 
 export default function MobileSinglePlayerGame({
   onBack,
+  startLevel = 0,
   animSpeed = 'normal', onAnimSpeed,
   soundEnabled, onSoundEnabled,
   musicEnabled, onMusicEnabled,
 }) {
   const { state, moveLeft, moveRight, softDrop, hardDrop, restart } = useGameEngine({
-    startLevel: 0,
+    startLevel,
     mode: 'single',
   });
 

@@ -62,7 +62,7 @@ export default function App() {
       <LevelSelect
         mode="single"
         onBack={goMenu}
-        onStart={() => setScreen('single')}
+        onStart={(cfg) => { setGameConfig(cfg); setScreen('single'); }}
         animSpeed={animSpeed} onAnimSpeed={setAnimSpeed}
         soundEnabled={soundEnabled} onSoundEnabled={setSoundEnabledState}
         musicEnabled={musicEnabled} onMusicEnabled={setMusicEnabledState}
@@ -90,6 +90,7 @@ export default function App() {
     return (
       <SinglePlayerGame
         onBack={goMenu}
+        startLevel={gameConfig?.level ?? 0}
         animSpeed={animSpeed}
         onAnimSpeed={setAnimSpeed}
         soundEnabled={soundEnabled}
@@ -105,7 +106,7 @@ export default function App() {
       <LevelSelect
         mode="single"
         onBack={goMenu}
-        onStart={() => setScreen('mobile-single')}
+        onStart={(cfg) => { setGameConfig(cfg); setScreen('mobile-single'); }}
         animSpeed={animSpeed} onAnimSpeed={setAnimSpeed}
         soundEnabled={soundEnabled} onSoundEnabled={setSoundEnabledState}
         musicEnabled={musicEnabled} onMusicEnabled={setMusicEnabledState}
@@ -117,6 +118,7 @@ export default function App() {
     return (
       <MobileSinglePlayerGame
         onBack={goMenu}
+        startLevel={gameConfig?.level ?? 0}
         animSpeed={animSpeed}
         onAnimSpeed={setAnimSpeed}
         soundEnabled={soundEnabled}

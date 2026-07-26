@@ -15,6 +15,7 @@ function isMobile() {
 
 export default function SinglePlayerGame({
   onBack,
+  startLevel = 0,
   animSpeed = 'normal', onAnimSpeed,
   soundEnabled, onSoundEnabled,
   musicEnabled, onMusicEnabled,
@@ -34,7 +35,7 @@ export default function SinglePlayerGame({
   }
 
   const { state, moveLeft, moveRight, softDrop, hardDrop, hold, restart } = useGameEngine({
-    startLevel: 0,
+    startLevel,
     mode: 'single',
   });
 
