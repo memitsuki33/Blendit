@@ -1,4 +1,4 @@
-import { ROWS, COLS, COLOR_COUNT } from './constants.js';
+import { ROWS, COLS, COLOR_COUNT, comboMultiplier } from './constants.js';
 
 export function emptyBoard() {
   return Array(ROWS).fill(null).map(() => Array(COLS).fill(0));
@@ -59,9 +59,9 @@ function mergedColor(baseColor, groupSize) {
   return ((baseColor - 1 + groupSize - 1) % COLOR_COUNT) + 1;
 }
 
-// Score for a merge result: exponential by resulting color
-function mergeScore(resultColor) {
-  return Math.pow(2, resultColor - 1) * 100;
+// Base score per merge group — same for all colors; combo multiplier applied in lockPiece
+function mergeScore(_resultColor) {
+  return 200;
 }
 
 // Process all merges (with cascades). Returns { board, score, chainCount }.
@@ -204,6 +204,7 @@ export function createInitialState(startLevel) {
     mergeStreak: 0,
     streakMilestone: 0,
     lastChainCount: 0,
+    lastComboMultiplier: 1,
     heldValue: null,
     holdUsed: false,
     turns: 0,
@@ -318,12 +319,14 @@ function lockPiece(state) {
   const { board: mergedBoard, score: mergeScoreVal, chainCount } = processMerges(newBoard, currentPiece.row, currentPiece.col);
 
   const newStreak = mergeScoreVal > 0 ? mergeStreak + 1 : 0;
+  const multiplier = comboMultiplier(newStreak);
+  const boostedScore = mergeScoreVal * multiplier;
   const streakBonus = (newStreak > 0 && newStreak % 3 === 0) ? 1 : 0;
   const newStreakMilestone = streakMilestone + (streakBonus > 0 ? 1 : 0);
 
   const garbageToSend = Math.floor(chainCount / 3) + streakBonus;
   const newTotalGarbage = totalGarbageSent + garbageToSend;
-  const newScore = score + mergeScoreVal;
+  const newScore = score + boostedScore;
   const newTurns = turns + 1;
 
   let finalBoard = mergedBoard;
@@ -365,6 +368,7 @@ function lockPiece(state) {
       mergeStreak: 0,
       streakMilestone: newStreakMilestone,
       lastChainCount: chainCount,
+      lastComboMultiplier: multiplier,
       holdUsed: false,
       turns: newTurns,
       timedGarbageThisTurn,
@@ -386,6 +390,7 @@ function lockPiece(state) {
     mergeStreak: newStreak,
     streakMilestone: newStreakMilestone,
     lastChainCount: chainCount,
+    lastComboMultiplier: multiplier,
     holdUsed: false,
     turns: newTurns,
     timedGarbageThisTurn,

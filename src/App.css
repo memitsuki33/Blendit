@@ -146,6 +146,15 @@ body {
   animation: fadeIn 0.3s ease;
 }
 
+/* Battle mode body — vertical flex column */
+.ls-battle-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+}
+
 /* Single-player variant: full-height scroll container */
 .level-select-single {
   gap: 0;
@@ -269,6 +278,17 @@ body {
   font-size: 0.75rem;
   color: var(--text-dim);
   text-align: right;
+}
+
+/* Locked level row */
+.ls-jump-row-locked {
+  opacity: 0.38;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+.ls-jump-row-locked:hover {
+  background: var(--panel-bg);
+  border-color: var(--border);
 }
 
 .level-select-screen h2 {

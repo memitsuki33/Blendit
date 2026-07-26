@@ -1,9 +1,10 @@
 import React from 'react';
 import { getTileColor, formatValue, formatScore } from '../utils/colors.js';
-import { getDropInterval, levelThreshold, MAX_LEVEL } from '../utils/constants.js';
+import { getDropInterval, levelThreshold, MAX_LEVEL, comboMultiplier } from '../utils/constants.js';
 
 export default function InfoPanel({ state, mode = 'single', pendingGarbage = 0 }) {
-  const { score, level, nextPieceValue } = state;
+  const { score, level, nextPieceValue, mergeStreak = 0 } = state;
+  const multiplier = comboMultiplier(mergeStreak);
   const color = getTileColor(nextPieceValue);
   const interval = getDropInterval(level);
   const speedLabel = level === 0 ? 'Manual' : `${(interval / 1000).toFixed(2)}s`;
@@ -62,6 +63,19 @@ export default function InfoPanel({ state, mode = 'single', pendingGarbage = 0 }
           }}
         />
       </div>
+
+      {/* Combo streak */}
+      {mergeStreak > 0 && (
+        <div className="info-block">
+          <span className="info-label">Combo</span>
+          <span className="info-value" style={{ color: 'var(--accent)', fontSize: '1rem' }}>
+            ×{multiplier}
+            <span style={{ fontSize: '0.65rem', color: 'var(--text-dim)', marginLeft: 4 }}>
+              {mergeStreak} streak
+            </span>
+          </span>
+        </div>
+      )}
 
       {/* Next piece */}
       <div className="next-preview">

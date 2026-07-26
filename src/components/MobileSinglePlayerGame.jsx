@@ -22,6 +22,16 @@ export default function MobileSinglePlayerGame({
   const [showColorGuide, setShowColorGuide] = useState(true);
   const [showSettings, setShowSettings] = useState(false);
 
+  // Persist max level reached for level-jump unlocks
+  useEffect(() => {
+    if (state.level > 0) {
+      const prev = parseInt(localStorage.getItem('blendIt_maxLevel') || '0', 10);
+      if (state.level > prev) {
+        localStorage.setItem('blendIt_maxLevel', String(state.level));
+      }
+    }
+  }, [state.level]);
+
   // Timed garbage sound
   const prevTurnsRef = useRef(0);
   useEffect(() => {
