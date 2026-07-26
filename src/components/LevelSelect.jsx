@@ -146,7 +146,7 @@ export default function LevelSelect({
                     <span className="ls-jump-lv">Lv {lv}</span>
                     {locked
                       ? <>
-                          <span className="ls-jump-speed">🔒 locked</span>
+                          <span className="ls-jump-speed">Locked</span>
                           <span className="ls-jump-score">{formatScore(needed)} pts to reach</span>
                           <span className="ls-jump-play" />
                         </>

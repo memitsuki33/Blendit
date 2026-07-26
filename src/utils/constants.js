@@ -34,10 +34,11 @@ export function levelThreshold(n) {
 }
 
 // Combo multiplier for a given consecutive-merge streak count (1-based).
-// streak 1–10 → ×2, 11–20 → ×3, 21–30 → ×4, …
+// streak 1 → ×1 | 2–5 → ×2 | 6–10 → ×3 | 11–15 → ×4 | 16–20 → ×5 | …
 export function comboMultiplier(streak) {
-  if (streak <= 0) return 1;
-  return Math.floor((streak - 1) / 10) + 2;
+  if (streak <= 1) return 1;
+  if (streak <= 5) return 2;
+  return Math.floor((streak - 6) / 5) + 3;
 }
 
 export function getDropInterval(level) {
