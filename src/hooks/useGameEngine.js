@@ -3,10 +3,10 @@ import { gameReducer, createInitialState } from '../utils/gameLogic.js';
 import { getDropInterval, levelThreshold, MAX_LEVEL } from '../utils/constants.js';
 import { playLevelUp, playMerge, playCombo, playGameOver } from '../utils/soundEffects.js';
 
-export function useGameEngine({ startLevel, mode = 'single' }) {
+export function useGameEngine({ startLevel, startScore = 0, mode = 'single' }) {
   const [state, dispatch] = useReducer(
     gameReducer,
-    startLevel,
+    { startLevel, startScore },
     createInitialState
   );
 
@@ -81,7 +81,7 @@ export function useGameEngine({ startLevel, mode = 'single' }) {
   const softDrop       = useCallback(() => dispatch({ type: 'SOFT_DROP' }), []);
   const hardDrop       = useCallback(() => dispatch({ type: 'HARD_DROP' }), []);
   const hold           = useCallback(() => dispatch({ type: 'HOLD' }), []);
-  const restart        = useCallback((level) => dispatch({ type: 'RESTART', level: level ?? startLevel }), [startLevel]);
+  const restart        = useCallback((level) => dispatch({ type: 'RESTART', level: level ?? startLevel, startScore }), [startLevel, startScore]);
   const addIncomingGarbage = useCallback((rows) => dispatch({ type: 'ADD_INCOMING_GARBAGE', rows }), []);
   const forceGameOver  = useCallback(() => dispatch({ type: 'FORCE_GAMEOVER' }), []);
 

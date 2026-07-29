@@ -183,7 +183,7 @@ export function addGarbageRows(board, count, garbagePool) {
 }
 
 // Initial game state factory
-export function createInitialState(startLevel) {
+export function createInitialState({ startLevel = 0, startScore = 0 } = {}) {
   const board = emptyBoard();
   const nextVal = getNextPieceValue(board);
   const pieceVal = getNextPieceValue(board);
@@ -191,7 +191,7 @@ export function createInitialState(startLevel) {
     board,
     currentPiece: { value: pieceVal, col: Math.floor(COLS / 2), row: 0 },
     nextPieceValue: nextVal,
-    score: 0,
+    score: startScore,
     level: startLevel,
     startLevel,
     gameOver: false,
@@ -219,7 +219,7 @@ export function gameReducer(state, action) {
 
   switch (action.type) {
     case 'RESTART': {
-      return createInitialState(action.level ?? state.startLevel);
+      return createInitialState({ startLevel: action.level ?? state.startLevel });
     }
 
     case 'MOVE_LEFT': {

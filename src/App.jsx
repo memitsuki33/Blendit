@@ -67,7 +67,7 @@ export default function App() {
   if (screen === 'menu') {
     return (
       <DashboardScreen
-        onSinglePlayer={() => setScreen('single-select')}
+        onSinglePlayer={(cfg) => { setGameConfig(cfg); setScreen('single'); }}
         onPvP={() => setScreen('battle-select')}
         onLogOut={() => setScreen('landing')}
         animSpeed={animSpeed}
@@ -118,6 +118,7 @@ export default function App() {
       <SinglePlayerGame
         onBack={goMenu}
         startLevel={gameConfig?.level ?? 0}
+        startScore={gameConfig?.startScore ?? 0}
         animSpeed={animSpeed}
         onAnimSpeed={setAnimSpeed}
         soundEnabled={soundEnabled}

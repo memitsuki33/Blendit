@@ -86,7 +86,7 @@ export default function DashboardScreen({
             {/* Level 0 — always available */}
             <button
               className="dash-btn dash-btn-orange nm-start0"
-              onClick={() => onSinglePlayer({ level: 0 })}
+              onClick={() => onSinglePlayer({ level: 0, startScore: 0 })}
             >
               Starts at Level 0
             </button>
@@ -95,11 +95,12 @@ export default function DashboardScreen({
             {JUMP_LEVELS.map(lv => {
               const locked = lv > maxUnlocked;
               const pts = levelThreshold(lv);
+              const startScore = Math.floor(pts * 0.75);
               return (
                 <button
                   key={lv}
                   className={`nm-level-row${locked ? ' nm-level-locked' : ''}`}
-                  onClick={locked ? undefined : () => onSinglePlayer({ level: lv })}
+                  onClick={locked ? undefined : () => onSinglePlayer({ level: lv, startScore })}
                   disabled={locked}
                 >
                   <span className="nm-lv-label">Lv {lv}</span>
