@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import LandingScreen from './components/LandingScreen.jsx';
 import LoadingScreen from './components/LoadingScreen.jsx';
 import MenuScreen from './components/MenuScreen.jsx';
 import LevelSelect from './components/LevelSelect.jsx';
@@ -11,7 +12,7 @@ import Tutorial from './components/Tutorial.jsx';
 import { setSoundEnabled, setMusicEnabled } from './utils/soundEffects.js';
 
 export default function App() {
-  const [screen, setScreen] = useState('loading');
+  const [screen, setScreen] = useState('landing');
   const [gameConfig, setGameConfig] = useState(null);
   const [animSpeed, setAnimSpeed] = useState('normal');
   const [soundEnabled, setSoundEnabledState] = useState(true);
@@ -35,6 +36,10 @@ export default function App() {
     setScreen('menu');
     setGameConfig(null);
   };
+
+  if (screen === 'landing') {
+    return <LandingScreen onLogin={() => setScreen('loading')} onRegister={() => setScreen('loading')} />;
+  }
 
   if (screen === 'loading') {
     return <LoadingScreen onDone={() => setScreen('menu')} />;
