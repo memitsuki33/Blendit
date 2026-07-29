@@ -12,10 +12,21 @@ export default function MenuScreen({
 
   return (
     <div className="menu">
-      <div className="menu-title">
-        <span>Blend</span>it
+      {/* Full-screen background image */}
+      <div className="menu-bg" />
+
+      {/* Logo section */}
+      <div className="menu-logo-section">
+        <img
+          src="/logo.png"
+          alt="BlendIt"
+          className="menu-logo"
+          draggable={false}
+        />
+        <div className="menu-subtitle">Mix the colors to attack!</div>
       </div>
-      <div className="menu-subtitle">Mix the colors to attack!</div>
+
+      {/* Buttons section */}
       <div className="menu-buttons">
         <button className="btn btn-primary" onMouseEnter={playHover} onClick={() => { playClick(); onSinglePlayerPC(); }}>
           Single Player (PC)
