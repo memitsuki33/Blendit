@@ -21,7 +21,7 @@ export default function LoadingScreen({ onDone }) {
   return (
     <div style={{
       position: 'fixed', inset: 0,
-      background: '#0f172a',
+      background: '#0f172a url(/loading-bg.png) center/cover no-repeat',
       display: 'flex', flexDirection: 'column',
       alignItems: 'center', justifyContent: 'center',
       gap: 48,
