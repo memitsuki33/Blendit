@@ -349,25 +349,42 @@ body {
   animation: fadeIn 0.35s ease;
 }
 
-/* Left player card */
+/* Background image */
+.dashboard-bg {
+  position: fixed;
+  inset: 0;
+  background-image: url(/loading-bg.png);
+  background-size: cover;
+  background-position: center;
+  opacity: 0.35;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Left player card — shifted right per design */
 .dashboard-player-card {
+  position: relative;
+  z-index: 1;
   flex-shrink: 0;
-  margin-left: 36px;
-  width: min(290px, 28vw);
-  height: min(520px, 82svh);
+  margin-left: 90px;
+  width: min(290px, 26vw);
+  height: min(530px, 84svh);
   background: #111c2e;
   border: 1.5px solid #1e3a5f;
   border-radius: 18px;
 }
 
-/* Center game buttons */
+/* Center game buttons — shifted up */
 .dashboard-center {
+  position: relative;
+  z-index: 1;
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 16px;
   padding: 0 48px;
+  margin-top: -80px;
 }
 
 .dashboard-row {
@@ -398,7 +415,7 @@ body {
 .dash-btn-blue   { background: #3b82f6; color: #fff; box-shadow: 0 4px 0 #1d4ed8; min-width: 180px; }
 .dash-btn-green  { background: #22c55e; color: #fff; box-shadow: 0 4px 0 #15803d; min-width: 180px; }
 
-/* Right nav sidebar */
+/* Right nav sidebar — full height, buttons stretch top to bottom */
 .dashboard-nav {
   position: fixed;
   right: 0;
@@ -406,31 +423,35 @@ body {
   bottom: 0;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  gap: 2px;
+  gap: 6px;
+  padding: 6px 0;
   z-index: 10;
 }
 
 .dashboard-nav-btn {
-  background: #1e293b;
+  flex: 1;
+  background: #1a2540;
   border: none;
-  border-left: 1.5px solid #334155;
-  border-top: 1.5px solid #334155;
-  border-bottom: 1.5px solid #334155;
-  border-radius: 6px 0 0 6px;
+  border-left: 1.5px solid #2a3f6a;
+  border-top: 1.5px solid #2a3f6a;
+  border-bottom: 1.5px solid #2a3f6a;
+  border-radius: 8px 0 0 8px;
   color: var(--text);
   font-family: inherit;
-  font-size: 0.65rem;
+  font-size: 0.62rem;
   font-weight: 900;
   letter-spacing: 1.5px;
   text-transform: uppercase;
   cursor: pointer;
-  padding: 12px 14px;
+  padding: 0 16px;
   text-align: right;
-  transition: background 0.15s, color 0.15s;
   white-space: nowrap;
+  transition: background 0.15s, color 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
 }
-.dashboard-nav-btn:hover { background: #293548; color: var(--accent); }
+.dashboard-nav-btn:hover { background: #243050; color: var(--accent); }
 
 /* Active nav item (HOME) is dimmed */
 .dashboard-nav-active {

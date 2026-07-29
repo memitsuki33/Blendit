@@ -20,6 +20,9 @@ export default function DashboardScreen({
 
   return (
     <div className="dashboard">
+      {/* Background */}
+      <div className="dashboard-bg" />
+
       {/* Left — player card */}
       <div className="dashboard-player-card" />
 
