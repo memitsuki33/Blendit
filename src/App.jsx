@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import LoadingScreen from './components/LoadingScreen.jsx';
 import MenuScreen from './components/MenuScreen.jsx';
 import LevelSelect from './components/LevelSelect.jsx';
 import SinglePlayerGame from './components/SinglePlayerGame.jsx';
@@ -10,7 +11,7 @@ import Tutorial from './components/Tutorial.jsx';
 import { setSoundEnabled, setMusicEnabled } from './utils/soundEffects.js';
 
 export default function App() {
-  const [screen, setScreen] = useState('menu');
+  const [screen, setScreen] = useState('loading');
   const [gameConfig, setGameConfig] = useState(null);
   const [animSpeed, setAnimSpeed] = useState('normal');
   const [soundEnabled, setSoundEnabledState] = useState(true);
@@ -34,6 +35,10 @@ export default function App() {
     setScreen('menu');
     setGameConfig(null);
   };
+
+  if (screen === 'loading') {
+    return <LoadingScreen onDone={() => setScreen('menu')} />;
+  }
 
   if (screen === 'menu') {
     return (
