@@ -21,12 +21,21 @@ export default function LoadingScreen({ onDone }) {
   return (
     <div style={{
       position: 'fixed', inset: 0,
-      background: '#0f172a url(/loading-bg.png) center/cover no-repeat',
+      background: '#0f172a',
       display: 'flex', flexDirection: 'column',
       alignItems: 'center', justifyContent: 'center',
       gap: 48,
       zIndex: 9999,
     }}>
+      {/* Background image at 40% opacity */}
+      <div style={{
+        position: 'absolute', inset: 0,
+        backgroundImage: 'url(/loading-bg.png)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        opacity: 0.4,
+      }} />
+
       {/* Logo image */}
       <img
         src="/logo.png"
