@@ -13,7 +13,7 @@ export function useGameEngine({ startLevel, mode = 'single' }) {
   const stateRef = useRef(state);
   stateRef.current = state;
 
-  // Auto-drop timer
+
   const timerRef = useRef(null);
 
   useEffect(() => {
