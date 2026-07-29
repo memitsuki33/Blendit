@@ -67,7 +67,7 @@ export default function LevelSelect({
       {/* ── Header row ── */}
       <div className="back-row">
         <button className="btn btn-ghost btn-sm" onClick={onBack}>Back</button>
-        <h2>{mode === 'battle' ? 'Battle Mode' : 'Single Player'}</h2>
+        <h2>{mode === 'battle' ? 'PvP' : 'Single Player'}</h2>
         {/* Settings in header only for battle mode */}
         {!isSingle
           ? <button className="btn btn-ghost btn-sm" onClick={() => setShowSettings(true)}>Settings</button>

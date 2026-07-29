@@ -361,20 +361,21 @@ body {
   z-index: 0;
 }
 
-/* Left player card — shifted right per design */
+/* Left player card — 10:20 = 1:2 ratio matching game board */
 .dashboard-player-card {
   position: relative;
   z-index: 1;
   flex-shrink: 0;
   margin-left: 90px;
-  width: min(290px, 26vw);
-  height: min(530px, 84svh);
+  /* width = 10 units, height = 20 units → aspect-ratio 1/2 */
+  height: min(600px, 88svh);
+  aspect-ratio: 1 / 2;
   background: #111c2e;
   border: 1.5px solid #1e3a5f;
   border-radius: 18px;
 }
 
-/* Center game buttons — shifted up */
+/* Center game buttons — pinned to top */
 .dashboard-center {
   position: relative;
   z-index: 1;
@@ -383,8 +384,8 @@ body {
   flex-direction: column;
   align-items: center;
   gap: 16px;
-  padding: 0 48px;
-  margin-top: -80px;
+  padding-top: 48px;
+  align-self: flex-start;
 }
 
 .dashboard-row {
