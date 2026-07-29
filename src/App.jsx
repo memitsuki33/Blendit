@@ -4,7 +4,7 @@ import LoginScreen from './components/LoginScreen.jsx';
 import SignupScreen from './components/SignupScreen.jsx';
 import ProfileSetupScreen from './components/ProfileSetupScreen.jsx';
 import LoadingScreen from './components/LoadingScreen.jsx';
-import MenuScreen from './components/MenuScreen.jsx';
+import DashboardScreen from './components/DashboardScreen.jsx';
 import LevelSelect from './components/LevelSelect.jsx';
 import SinglePlayerGame from './components/SinglePlayerGame.jsx';
 import MobileSinglePlayerGame from './components/MobileSinglePlayerGame.jsx';
@@ -66,12 +66,10 @@ export default function App() {
 
   if (screen === 'menu') {
     return (
-      <MenuScreen
-        onSinglePlayerPC={() => setScreen('single-select')}
-        onSinglePlayerMobile={() => setScreen('mobile-single-select')}
-        onBattlePC={() => setScreen('battle-select')}
-        onBattleMobile={() => setScreen('mobile-lobby')}
-        onTutorial={() => setScreen('tutorial')}
+      <DashboardScreen
+        onSinglePlayer={() => setScreen('single-select')}
+        onPvP={() => setScreen('battle-select')}
+        onLogOut={() => setScreen('landing')}
         animSpeed={animSpeed}
         onAnimSpeed={setAnimSpeed}
         soundEnabled={soundEnabled}
