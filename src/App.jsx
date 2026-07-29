@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import LandingScreen from './components/LandingScreen.jsx';
 import LoginScreen from './components/LoginScreen.jsx';
+import SignupScreen from './components/SignupScreen.jsx';
+import ProfileSetupScreen from './components/ProfileSetupScreen.jsx';
 import LoadingScreen from './components/LoadingScreen.jsx';
 import MenuScreen from './components/MenuScreen.jsx';
 import LevelSelect from './components/LevelSelect.jsx';
@@ -13,7 +15,7 @@ import Tutorial from './components/Tutorial.jsx';
 import { setSoundEnabled, setMusicEnabled } from './utils/soundEffects.js';
 
 export default function App() {
-  const [screen, setScreen] = useState('landing');
+  const [screen, setScreen] = useState('loading-intro');
   const [gameConfig, setGameConfig] = useState(null);
   const [animSpeed, setAnimSpeed] = useState('normal');
   const [soundEnabled, setSoundEnabledState] = useState(true);
@@ -38,12 +40,24 @@ export default function App() {
     setGameConfig(null);
   };
 
+  if (screen === 'loading-intro') {
+    return <LoadingScreen onDone={() => setScreen('landing')} />;
+  }
+
   if (screen === 'landing') {
-    return <LandingScreen onLogin={() => setScreen('login')} onRegister={() => setScreen('loading')} />;
+    return <LandingScreen onLogin={() => setScreen('login')} onRegister={() => setScreen('signup')} />;
   }
 
   if (screen === 'login') {
     return <LoginScreen onBack={() => setScreen('landing')} onLogin={() => setScreen('loading')} />;
+  }
+
+  if (screen === 'signup') {
+    return <SignupScreen onBack={() => setScreen('landing')} onSignup={() => setScreen('profile-setup')} />;
+  }
+
+  if (screen === 'profile-setup') {
+    return <ProfileSetupScreen onProceed={() => setScreen('loading')} />;
   }
 
   if (screen === 'loading') {

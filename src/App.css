@@ -261,6 +261,82 @@ body {
 }
 .auth-google-btn:hover { filter: brightness(1.15); background: #1e293b; }
 
+/* ===== PROFILE SETUP ===== */
+.profile-card {
+  gap: 16px;
+}
+
+.profile-title {
+  text-align: center;
+  margin-bottom: 4px;
+}
+
+.profile-row {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.profile-field-sex {
+  flex: 0 0 auto;
+}
+
+.profile-field-birth {
+  flex: 1;
+}
+
+.profile-select-wrap {
+  position: relative;
+}
+
+.profile-select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 32px;
+  cursor: pointer;
+  width: 100%;
+}
+
+.profile-select-wrap::after {
+  content: '▼';
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.65rem;
+  color: #4b6cb7;
+  pointer-events: none;
+}
+
+.profile-select option {
+  background: #0f172a;
+  color: var(--text);
+}
+
+.profile-date {
+  color-scheme: dark;
+  width: 100%;
+}
+
+.profile-notice {
+  background: rgba(30, 20, 0, 0.75);
+  border: 1px solid #3a2e00;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  line-height: 1.6;
+}
+
+.profile-notice-highlight {
+  color: var(--accent);
+}
+
+.profile-proceed-btn {
+  margin-top: 6px;
+}
+
 /* ===== MENU ===== */
 .menu {
   position: relative;
