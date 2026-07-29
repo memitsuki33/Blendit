@@ -3,6 +3,7 @@ import React from 'react';
 export default function LandingScreen({ onLogin, onRegister }) {
   return (
     <div className="landing">
+      <div className="landing-bg" />
       <img
         src="/logo.png"
         alt="BlendIt"

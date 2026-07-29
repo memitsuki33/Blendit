@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import LandingScreen from './components/LandingScreen.jsx';
+import LoginScreen from './components/LoginScreen.jsx';
 import LoadingScreen from './components/LoadingScreen.jsx';
 import MenuScreen from './components/MenuScreen.jsx';
 import LevelSelect from './components/LevelSelect.jsx';
@@ -38,7 +39,11 @@ export default function App() {
   };
 
   if (screen === 'landing') {
-    return <LandingScreen onLogin={() => setScreen('loading')} onRegister={() => setScreen('loading')} />;
+    return <LandingScreen onLogin={() => setScreen('login')} onRegister={() => setScreen('loading')} />;
+  }
+
+  if (screen === 'login') {
+    return <LoginScreen onBack={() => setScreen('landing')} onLogin={() => setScreen('loading')} />;
   }
 
   if (screen === 'loading') {
