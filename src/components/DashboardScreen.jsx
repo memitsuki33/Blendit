@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import SettingsModal from './SettingsModal.jsx';
+import ColorSequenceModal from './ColorSequenceModal.jsx';
 
 const NAV_ITEMS = ['HOME', 'LEVELS', 'RANKS', 'TROPHIES', 'CHATS', 'SETTINGS', 'USER DATA', 'LOG OUT'];
 
@@ -10,7 +11,9 @@ export default function DashboardScreen({
   musicEnabled, onMusicEnabled,
 }) {
   const [activeNav, setActiveNav] = useState('HOME');
+  const [panel, setPanel] = useState('home');
   const [showSettings, setShowSettings] = useState(false);
+  const [showColors, setShowColors] = useState(false);
 
   function handleNav(item) {
     if (item === 'LOG OUT') { onLogOut(); return; }
@@ -26,23 +29,43 @@ export default function DashboardScreen({
       {/* Left — player card */}
       <div className="dashboard-player-card" />
 
-      {/* Center — game buttons */}
-      <div className="dashboard-center">
-        <div className="dashboard-row">
-          <button className="dash-btn dash-btn-orange" onClick={onSinglePlayer}>
-            Single Player
+      {/* Center — swaps based on panel */}
+      {panel === 'home' && (
+        <div className="dashboard-center">
+          <div className="dashboard-row">
+            <button className="dash-btn dash-btn-orange" onClick={() => setPanel('single-player')}>
+              Single Player
+            </button>
+            <button className="dash-btn dash-btn-pink">
+              Friends
+            </button>
+          </div>
+          <button className="dash-btn dash-btn-blue" onClick={onPvP}>
+            PvP
           </button>
-          <button className="dash-btn dash-btn-pink">
-            Friends
+          <button className="dash-btn dash-btn-green">
+            Shop
           </button>
         </div>
-        <button className="dash-btn dash-btn-blue">
-          PvP
-        </button>
-        <button className="dash-btn dash-btn-green">
-          Shop
-        </button>
-      </div>
+      )}
+
+      {panel === 'single-player' && (
+        <div className="dashboard-center dashboard-sub-center">
+          <h2 className="dashboard-sub-title">Single Player</h2>
+          <button className="dash-btn dash-btn-orange" onClick={() => onSinglePlayer({ mode: 'normal' })}>
+            Normal Mode
+          </button>
+          <button className="dash-btn dash-btn-blue">
+            Tetris Mode
+          </button>
+          <button className="dash-btn dash-btn-ghost" onClick={() => setShowColors(true)}>
+            Color Cycle Guide
+          </button>
+          <button className="dash-btn dash-btn-ghost" onClick={() => setPanel('home')}>
+            Back
+          </button>
+        </div>
+      )}
 
       {/* Right — nav sidebar */}
       <nav className="dashboard-nav">
@@ -67,6 +90,10 @@ export default function DashboardScreen({
           musicEnabled={musicEnabled}
           onMusicEnabled={onMusicEnabled}
         />
+      )}
+
+      {showColors && (
+        <ColorSequenceModal onClose={() => setShowColors(false)} actionLabel="Got it!" />
       )}
     </div>
   );

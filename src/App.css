@@ -461,6 +461,31 @@ body {
   pointer-events: none;
 }
 
+.dashboard-sub-center {
+  padding-top: 40px;
+  align-self: flex-start;
+}
+
+.dashboard-sub-title {
+  font-size: 1.1rem;
+  font-weight: 900;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--text);
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.dash-btn-ghost {
+  background: #1e293b;
+  color: var(--text-dim);
+  border: 1.5px solid #334155;
+  box-shadow: 0 2px 0 #0f172a;
+  font-size: 0.8rem;
+  min-width: 180px;
+}
+.dash-btn-ghost:hover { color: var(--text); }
+
 /* ===== MENU ===== */
 .menu {
   position: relative;
