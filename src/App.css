@@ -391,15 +391,14 @@ body {
 .dashboard-row {
   display: flex;
   gap: 16px;
-  align-items: center;
+  align-items: stretch;
+  /* fixed width forces every row to be identical */
+  width: min(420px, 46vw);
 }
 
 .dashboard-row .dash-btn {
   flex: 1;
   min-width: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 /* Game buttons */
@@ -412,21 +411,24 @@ body {
   letter-spacing: 2px;
   text-transform: uppercase;
   cursor: pointer;
-  padding: 0 24px;
+  /* flex so text always centres inside the fixed height */
+  display: flex;
+  align-items: center;
+  justify-content: center;
   height: 58px;
+  padding: 0 20px;
   white-space: nowrap;
-  min-width: 160px;
   transition: filter 0.15s, transform 0.1s;
 }
 .dash-btn:hover  { filter: brightness(1.15); transform: translateY(-2px); }
 .dash-btn:active { transform: translateY(0); }
 
 .dash-btn-orange { background: #f59e0b; color: #111; box-shadow: 0 4px 0 #b45309; }
-.dash-btn-pink   { background: #ec4899; color: #fff; box-shadow: 0 4px 0 #9d174d; min-width: 180px; }
-.dash-btn-blue   { background: #3b82f6; color: #fff; box-shadow: 0 4px 0 #1d4ed8; min-width: 180px; }
-.dash-btn-green  { background: #22c55e; color: #fff; box-shadow: 0 4px 0 #15803d; min-width: 180px; }
-.dash-btn-purple { background: #a855f7; color: #fff; box-shadow: 0 4px 0 #7e22ce; min-width: 180px; }
-.dash-btn-teal   { background: #14b8a6; color: #fff; box-shadow: 0 4px 0 #0f766e; min-width: 180px; }
+.dash-btn-pink   { background: #ec4899; color: #fff; box-shadow: 0 4px 0 #9d174d; }
+.dash-btn-blue   { background: #3b82f6; color: #fff; box-shadow: 0 4px 0 #1d4ed8; }
+.dash-btn-green  { background: #22c55e; color: #fff; box-shadow: 0 4px 0 #15803d; }
+.dash-btn-purple { background: #a855f7; color: #fff; box-shadow: 0 4px 0 #7e22ce; }
+.dash-btn-teal   { background: #14b8a6; color: #fff; box-shadow: 0 4px 0 #0f766e; }
 
 /* Right nav sidebar — full height, buttons stretch top to bottom */
 .dashboard-nav {
