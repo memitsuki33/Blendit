@@ -361,15 +361,17 @@ body {
   z-index: 0;
 }
 
-/* Left player card — 10:20 = 1:2 ratio matching game board */
+/* Left player card — exact same size as the real game board */
 .dashboard-player-card {
   position: relative;
   z-index: 1;
   flex-shrink: 0;
-  margin-left: 90px;
-  /* width = 10 units, height = 20 units → aspect-ratio 1/2 */
-  height: min(600px, 88svh);
-  aspect-ratio: 1 / 2;
+  margin-left: 192px; /* 2 inches — matches SinglePlayerGame */
+  /* Derive dimensions from the same cell formula used in .game-wrapper */
+  --_cell: min(34px, calc((94svh - 52px) / 20));
+  width:  calc(10 * var(--_cell) + 28px); /* 10 cols + gaps/padding/border */
+  height: calc(20 * var(--_cell) + 52px); /* 20 rows + gaps/padding/border */
+  aspect-ratio: unset;
   background: #111c2e;
   border: 1.5px solid #1e3a5f;
   border-radius: 18px;
@@ -660,9 +662,9 @@ body {
 }
 
 .gd-next-tile {
-  width: 36px;
-  height: 36px;
-  border-radius: 6px;
+  width: 46px;
+  height: 46px;
+  border-radius: 8px;
 }
 
 /* Info column */
@@ -678,10 +680,10 @@ body {
   background: #1a2540;
   border: 1.5px solid #2a3f6a;
   border-radius: 10px;
-  padding: 8px 10px;
+  padding: 12px 14px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
 }
 
 .gd-row-pair {
@@ -703,7 +705,7 @@ body {
 }
 
 .gd-info-value {
-  font-size: 1rem;
+  font-size: 1.4rem;
   font-weight: 900;
   color: var(--text);
   letter-spacing: -0.5px;
@@ -736,9 +738,9 @@ body {
 }
 
 .gd-hold-tile {
-  width: 36px;
-  height: 36px;
-  border-radius: 6px;
+  width: 46px;
+  height: 46px;
+  border-radius: 8px;
   transition: opacity 0.15s;
 }
 
