@@ -101,18 +101,10 @@ export default function GameDashboard({
       <div className="gd-card-wrap">
         <div
           className="dashboard-player-card gd-board-card"
-          style={{ '--gd-cell': `min(29px, calc((88svh - 12px) / 20))` }}
+          style={{ '--gd-cell': `min(34px, calc((94svh - 52px) / 20))` }}
         >
           <GameBoard state={state} animSpeed={animSpeed} />
         </div>
-
-        {/* Pause button below board */}
-        <button
-          className="gd-pause-btn"
-          onClick={() => paused ? setPaused(false) : setPaused(true)}
-        >
-          {paused ? '▶ Resume' : '⏸ Pause'}
-        </button>
       </div>
 
       {/* Center — NEXT column + info */}
@@ -168,6 +160,11 @@ export default function GameDashboard({
               }}
             />
           </div>
+
+          {/* Back to Menu */}
+          <button className="gd-menu-btn" onClick={onBack}>
+            Back to Menu
+          </button>
         </div>
       </div>
 

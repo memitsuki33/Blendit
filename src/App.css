@@ -597,16 +597,16 @@ body {
 
 /* Player card hosts the board — override cell size to fit */
 .gd-board-card {
-  margin-left: 90px;
+  margin-left: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
-  padding: 6px;
-  --cell-size: var(--gd-cell, min(28px, calc((88svh - 24px) / 20)));
+  overflow: visible;
+  padding: 0;
+  --cell-size: var(--gd-cell, min(34px, calc((94svh - 52px) / 20)));
   --board-gap: 2px;
-  height: min(600px, 88svh);
-  aspect-ratio: 1 / 2;
+  height: auto;
+  aspect-ratio: unset;
 }
 
 /* Wrapper holds card + pause button */
@@ -672,28 +672,28 @@ body {
 }
 
 .gd-next-tile {
-  width: 46px;
-  height: 46px;
-  border-radius: 8px;
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
 }
 
 /* Info column */
 .gd-info-col {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  flex: 1;
+  gap: 8px;
+  width: 120px;
+  flex-shrink: 0;
 }
 
 .gd-info-block {
   background: #1a2540;
   border: 1.5px solid #2a3f6a;
   border-radius: 10px;
-  padding: 10px 14px;
+  padding: 8px 10px;
   display: flex;
   flex-direction: column;
   gap: 4px;
-  min-width: 130px;
 }
 
 .gd-row-pair {
@@ -715,10 +715,13 @@ body {
 }
 
 .gd-info-value {
-  font-size: 1.3rem;
+  font-size: 1rem;
   font-weight: 900;
   color: var(--text);
   letter-spacing: -0.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .gd-red { color: #ef4444; }
@@ -745,11 +748,30 @@ body {
 }
 
 .gd-hold-tile {
-  width: 46px;
-  height: 46px;
-  border-radius: 8px;
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
   transition: opacity 0.15s;
 }
+
+/* Back to Menu button in game dashboard info panel */
+.gd-menu-btn {
+  background: #1a2540;
+  border: 1.5px solid #2a3f6a;
+  border-radius: 8px;
+  color: var(--text-dim);
+  font-family: inherit;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  padding: 8px 10px;
+  width: 100%;
+  text-align: center;
+  transition: background 0.15s, color 0.15s;
+}
+.gd-menu-btn:hover { background: #243050; color: var(--text); }
 
 /* Disabled nav buttons during game */
 .gd-nav-disabled {
