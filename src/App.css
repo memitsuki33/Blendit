@@ -662,9 +662,24 @@ body {
 }
 
 .gd-next-tile {
-  width: 46px;
-  height: 46px;
-  border-radius: 8px;
+  width: 58px;
+  height: 58px;
+  border-radius: 10px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gd-next-tile-shop {
+  opacity: 0.45;
+}
+
+.gd-next-shop-icon {
+  font-size: 1.1rem;
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
 }
 
 /* Info column */
@@ -1989,12 +2004,12 @@ kbd {
 /* ===== TETRIS-BATTLE COMBO DISPLAY ===== */
 @keyframes comboPop {
   0%   { transform: translate(-50%, -50%) scale(0.25); opacity: 0; }
-  18%  { transform: translate(-50%, -50%) scale(1.30); opacity: 1; }
-  30%  { transform: translate(-50%, -50%) scale(0.88); opacity: 1; }
-  42%  { transform: translate(-50%, -50%) scale(1.08); opacity: 1; }
-  54%  { transform: translate(-50%, -50%) scale(1.00); opacity: 1; }
-  80%  { transform: translate(-50%, -50%) scale(1.00); opacity: 1; }
-  100% { transform: translate(-50%, -50%) scale(1.00); opacity: 0.55; }
+  12%  { transform: translate(-50%, -50%) scale(1.30); opacity: 1; }
+  20%  { transform: translate(-50%, -50%) scale(0.88); opacity: 1; }
+  28%  { transform: translate(-50%, -50%) scale(1.08); opacity: 1; }
+  36%  { transform: translate(-50%, -50%) scale(1.00); opacity: 1; }
+  70%  { transform: translate(-50%, -50%) scale(1.00); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(1.00); opacity: 0; }
 }
 
 @keyframes comboGarbagePop {
@@ -2015,7 +2030,7 @@ kbd {
   gap: 0;
   pointer-events: none;
   z-index: 8;
-  animation: comboPop 1.3s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: comboPop 1.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
   text-align: center;
   white-space: nowrap;
 }

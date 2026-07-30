@@ -110,13 +110,16 @@ export default function GameDashboard({
         <div className="gd-next-col">
           {[nextPieceValue, null, null, null, null].map((val, i) => {
             const c = val ? getTileColor(val) : null;
+            const isShop = i > 0;
             return (
               <div key={i} className="gd-next-box">
                 <span className="gd-next-label">NEXT</span>
                 <div
-                  className="gd-next-tile"
+                  className={`gd-next-tile${isShop ? ' gd-next-tile-shop' : ''}`}
                   style={{ background: c ? c.bg : 'transparent', border: c ? 'none' : '1.5px dashed #334155' }}
-                />
+                >
+                  {isShop && <span className="gd-next-shop-icon">🔒</span>}
+                </div>
               </div>
             );
           })}
