@@ -597,7 +597,7 @@ body {
 
 /* Player card hosts the board — override cell size to fit */
 .gd-board-card {
-  margin-left: 12px;
+  margin-left: 192px; /* 2 inches */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1145,6 +1145,9 @@ body {
   align-items: flex-start;
   gap: 16px;
   animation: fadeIn 0.3s ease;
+  margin-left: 192px; /* 2 inches — matches GameDashboard board position */
+  --cell-size: min(34px, calc((94svh - 52px) / 20));
+  --board-gap: 2px;
 }
 
 .battle-wrapper {
@@ -1152,6 +1155,8 @@ body {
   align-items: flex-start;
   gap: 16px;
   animation: fadeIn 0.3s ease;
+  --cell-size: min(34px, calc((94svh - 52px) / 20));
+  --board-gap: 2px;
 }
 
 .player-section {
