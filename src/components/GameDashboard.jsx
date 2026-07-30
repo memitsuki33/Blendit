@@ -137,7 +137,7 @@ export default function GameDashboard({
           <div className="gd-row-pair">
             <div className="gd-info-block gd-half">
               <span className="gd-info-label">LEVEL</span>
-              <span className="gd-info-value gd-red">{level === 0 ? 'N/A' : level}</span>
+              <span className="gd-info-value gd-red">{level}</span>
             </div>
             <div className="gd-info-block gd-half">
               <span className="gd-info-label">NEXT LEVEL</span>
