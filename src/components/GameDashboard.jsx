@@ -97,12 +97,9 @@ export default function GameDashboard({
     <div className="dashboard gd-root">
       <div className="dashboard-bg" />
 
-      {/* Left — board inside player card */}
+      {/* Left — board (same size/position as SinglePlayerGame) */}
       <div className="gd-card-wrap">
-        <div
-          className="dashboard-player-card gd-board-card"
-          style={{ '--gd-cell': `min(34px, calc((94svh - 52px) / 20))` }}
-        >
+        <div className="player-section">
           <GameBoard state={state} animSpeed={animSpeed} />
         </div>
       </div>

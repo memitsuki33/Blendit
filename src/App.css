@@ -595,30 +595,18 @@ body {
   align-items: stretch;
 }
 
-/* Player card hosts the board — override cell size to fit */
-.gd-board-card {
-  margin-left: 192px; /* 2 inches */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: visible;
-  padding: 0;
-  --cell-size: var(--gd-cell, min(34px, calc((94svh - 52px) / 20)));
-  --board-gap: 2px;
-  height: auto;
-  aspect-ratio: unset;
-}
-
-/* Wrapper holds card + pause button */
+/* Wrapper positions the board — same margin/cell-size as .game-wrapper */
 .gd-card-wrap {
   position: relative;
   z-index: 1;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  gap: 10px;
   flex-shrink: 0;
+  margin-left: 192px; /* 2 inches — matches .game-wrapper */
+  --cell-size: min(34px, calc((94svh - 52px) / 20));
+  --board-gap: 2px;
 }
 
 .gd-pause-btn {
@@ -682,7 +670,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  width: 120px;
+  width: 180px;
   flex-shrink: 0;
 }
 
