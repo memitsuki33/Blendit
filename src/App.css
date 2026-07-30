@@ -397,6 +397,9 @@ body {
 .dashboard-row .dash-btn {
   flex: 1;
   min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* Game buttons */
@@ -409,8 +412,10 @@ body {
   letter-spacing: 2px;
   text-transform: uppercase;
   cursor: pointer;
-  padding: 16px 32px;
-  min-width: 180px;
+  padding: 0 24px;
+  height: 58px;
+  white-space: nowrap;
+  min-width: 160px;
   transition: filter 0.15s, transform 0.1s;
 }
 .dash-btn:hover  { filter: brightness(1.15); transform: translateY(-2px); }
@@ -498,7 +503,7 @@ body {
   display: flex;
   align-items: center;
   gap: 14px;
-  width: 100%;
+  width: min(380px, 55vw);
   margin-bottom: 4px;
 }
 
@@ -515,7 +520,6 @@ body {
   cursor: pointer;
   padding: 7px 14px;
   flex-shrink: 0;
-  margin-top: 4px;
   transition: color 0.15s, background 0.15s;
 }
 .nm-back-btn:hover { color: var(--text); background: #293548; }
