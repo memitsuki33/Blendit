@@ -995,14 +995,15 @@ body {
   text-align: left;
 }
 
-/* Level 0 "Start fresh" big button */
+/* Level 0 "Start fresh" big button — same height as ls-jump-row */
 .ls-jump-start0 {
   width: 100%;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  gap: 2px;
-  padding: 12px 16px;
+  justify-content: center;
+  gap: 8px;
+  padding: 9px 12px;
   font-size: 1rem;
 }
 .ls-jump-start0-sub {
