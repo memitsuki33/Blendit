@@ -3,7 +3,7 @@ import { gameReducer, createInitialState } from '../utils/gameLogic.js';
 import { getDropInterval, levelThreshold, MAX_LEVEL } from '../utils/constants.js';
 import { playLevelUp, playMerge, playCombo, playGameOver } from '../utils/soundEffects.js';
 
-export function useGameEngine({ startLevel, startScore = 0, mode = 'single' }) {
+export function useGameEngine({ startLevel, startScore = 0, mode = 'single', paused = false }) {
   const [state, dispatch] = useReducer(
     gameReducer,
     { startLevel, startScore },
@@ -21,7 +21,7 @@ export function useGameEngine({ startLevel, startScore = 0, mode = 'single' }) {
       clearInterval(timerRef.current);
       timerRef.current = null;
     }
-    if (state.gameOver) return;
+    if (state.gameOver || paused) return;
 
     const interval = getDropInterval(state.level);
     if (!interval) return;
@@ -36,7 +36,7 @@ export function useGameEngine({ startLevel, startScore = 0, mode = 'single' }) {
         timerRef.current = null;
       }
     };
-  }, [state.level, state.gameOver]);
+  }, [state.level, state.gameOver, paused]);
 
   // Single player: level up based on score
   const prevLevelRef = useRef(null);

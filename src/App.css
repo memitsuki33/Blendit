@@ -590,6 +590,210 @@ body {
   color: var(--text-dim);
 }
 
+/* ===== GAME DASHBOARD ===== */
+.gd-root {
+  align-items: stretch;
+}
+
+/* Player card hosts the board — override cell size to fit */
+.gd-board-card {
+  margin-left: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 6px;
+  --cell-size: var(--gd-cell, min(28px, calc((88svh - 24px) / 20)));
+  --board-gap: 2px;
+  height: min(600px, 88svh);
+  aspect-ratio: 1 / 2;
+}
+
+/* Wrapper holds card + pause button */
+.gd-card-wrap {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.gd-pause-btn {
+  background: #1e293b;
+  border: 1.5px solid #334155;
+  border-radius: 8px;
+  color: var(--text-dim);
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  padding: 8px 22px;
+  transition: background 0.15s, color 0.15s;
+}
+.gd-pause-btn:hover { background: #293548; color: var(--text); }
+
+/* Center area */
+.gd-center {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding-top: 36px;
+  padding-left: 20px;
+}
+
+/* NEXT preview column */
+.gd-next-col {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.gd-next-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.gd-next-label {
+  font-size: 0.55rem;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+}
+
+.gd-next-tile {
+  width: 46px;
+  height: 46px;
+  border-radius: 8px;
+}
+
+/* Info column */
+.gd-info-col {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
+}
+
+.gd-info-block {
+  background: #1a2540;
+  border: 1.5px solid #2a3f6a;
+  border-radius: 10px;
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 130px;
+}
+
+.gd-row-pair {
+  display: flex;
+  gap: 10px;
+}
+
+.gd-half {
+  flex: 1;
+  min-width: 0;
+}
+
+.gd-info-label {
+  font-size: 0.6rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.gd-info-value {
+  font-size: 1.3rem;
+  font-weight: 900;
+  color: var(--text);
+  letter-spacing: -0.5px;
+}
+
+.gd-red { color: #ef4444; }
+
+.gd-progress-track {
+  height: 6px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 3px;
+  overflow: hidden;
+  margin: 2px 0;
+}
+
+.gd-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #3b82f6, #a855f7);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.gd-progress-label {
+  font-size: 0.6rem;
+  font-weight: 600;
+  color: var(--text-dim);
+}
+
+.gd-hold-tile {
+  width: 46px;
+  height: 46px;
+  border-radius: 8px;
+  transition: opacity 0.15s;
+}
+
+/* Disabled nav buttons during game */
+.gd-nav-disabled {
+  opacity: 0.25 !important;
+  cursor: not-allowed !important;
+  pointer-events: none !important;
+}
+
+/* Pause overlay */
+.gd-pause-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  z-index: 100;
+}
+
+.gd-pause-text {
+  font-size: 3rem;
+  font-weight: 900;
+  letter-spacing: 6px;
+  color: var(--text);
+}
+
+.gd-pause-resume-btn {
+  background: var(--accent);
+  border: none;
+  border-radius: 10px;
+  color: #111;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  padding: 14px 32px;
+  transition: filter 0.15s;
+}
+.gd-pause-resume-btn:hover { filter: brightness(1.15); }
+
 /* ===== MENU ===== */
 .menu {
   position: relative;

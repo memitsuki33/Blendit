@@ -5,6 +5,7 @@ import SignupScreen from './components/SignupScreen.jsx';
 import ProfileSetupScreen from './components/ProfileSetupScreen.jsx';
 import LoadingScreen from './components/LoadingScreen.jsx';
 import DashboardScreen from './components/DashboardScreen.jsx';
+import GameDashboard from './components/GameDashboard.jsx';
 import LevelSelect from './components/LevelSelect.jsx';
 import SinglePlayerGame from './components/SinglePlayerGame.jsx';
 import MobileSinglePlayerGame from './components/MobileSinglePlayerGame.jsx';
@@ -67,7 +68,7 @@ export default function App() {
   if (screen === 'menu') {
     return (
       <DashboardScreen
-        onSinglePlayer={(cfg) => { setGameConfig(cfg); setScreen('single'); }}
+        onSinglePlayer={(cfg) => { setGameConfig(cfg); setScreen('game-dashboard'); }}
         onPvP={() => setScreen('battle-select')}
         onLogOut={() => setScreen('landing')}
         animSpeed={animSpeed}
@@ -76,6 +77,19 @@ export default function App() {
         onSoundEnabled={setSoundEnabledState}
         musicEnabled={musicEnabled}
         onMusicEnabled={setMusicEnabledState}
+      />
+    );
+  }
+
+  if (screen === 'game-dashboard') {
+    return (
+      <GameDashboard
+        startLevel={gameConfig?.level ?? 0}
+        startScore={gameConfig?.startScore ?? 0}
+        onBack={goMenu}
+        animSpeed={animSpeed} onAnimSpeed={setAnimSpeed}
+        soundEnabled={soundEnabled} onSoundEnabled={setSoundEnabledState}
+        musicEnabled={musicEnabled} onMusicEnabled={setMusicEnabledState}
       />
     );
   }
