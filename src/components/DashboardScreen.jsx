@@ -54,8 +54,14 @@ export default function DashboardScreen({
             </button>
             <button className="dash-btn dash-btn-pink">Friends</button>
           </div>
-          <button className="dash-btn dash-btn-blue" onClick={onPvP}>PvP</button>
-          <button className="dash-btn dash-btn-green">Shop</button>
+          <div className="dashboard-row">
+            <button className="dash-btn dash-btn-blue" onClick={onPvP}>PvP</button>
+            <button className="dash-btn dash-btn-purple">Dailies</button>
+          </div>
+          <div className="dashboard-row">
+            <button className="dash-btn dash-btn-green">Shop</button>
+            <button className="dash-btn dash-btn-teal">Quest</button>
+          </div>
         </div>
       )}
 

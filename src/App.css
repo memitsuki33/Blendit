@@ -415,6 +415,8 @@ body {
 .dash-btn-pink   { background: #ec4899; color: #fff; box-shadow: 0 4px 0 #9d174d; min-width: 180px; }
 .dash-btn-blue   { background: #3b82f6; color: #fff; box-shadow: 0 4px 0 #1d4ed8; min-width: 180px; }
 .dash-btn-green  { background: #22c55e; color: #fff; box-shadow: 0 4px 0 #15803d; min-width: 180px; }
+.dash-btn-purple { background: #a855f7; color: #fff; box-shadow: 0 4px 0 #7e22ce; min-width: 180px; }
+.dash-btn-teal   { background: #14b8a6; color: #fff; box-shadow: 0 4px 0 #0f766e; min-width: 180px; }
 
 /* Right nav sidebar — full height, buttons stretch top to bottom */
 .dashboard-nav {
