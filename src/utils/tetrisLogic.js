@@ -1,5 +1,5 @@
 import { ROWS, COLS, COLOR_COUNT, comboMultiplier } from './constants.js';
-import { processMerges, emptyBoard } from './gameLogic.js';
+import { processMerges, applyGravity, emptyBoard } from './gameLogic.js';
 
 // ── Piece types ──────────────────────────────────────────────────────────────
 const PIECE_TYPES = ['I', 'O', 'T', 'S', 'Z', 'J', 'L'];
@@ -186,10 +186,9 @@ function lockTetrisPiece(state) {
     newBoard[row][col] = value;
   }
 
-  // Blendit merge cascade (no line-clearing, no post-merge gravity)
+  // Blendit merge cascade — then gravity so merged gaps collapse
   const { board: mergedBoard, score: mergeScoreVal, chainCount } = processMerges(newBoard);
-
-  const finalBoard = mergedBoard;
+  const finalBoard = applyGravity(mergedBoard);
 
   // Combo / streak
   const newStreak = mergeScoreVal > 0 ? mergeStreak + 1 : 0;

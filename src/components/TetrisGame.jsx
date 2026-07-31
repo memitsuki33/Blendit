@@ -2,10 +2,25 @@ import React, { useEffect, useCallback, useState, useRef } from 'react';
 import { useTetrisEngine } from '../hooks/useTetrisEngine.js';
 import TetrisBoard from './TetrisBoard.jsx';
 import SettingsModal from './SettingsModal.jsx';
+import ShopModal from './ShopModal.jsx';
 import { getTileColor, formatScore } from '../utils/colors.js';
 import { getDropInterval, levelThreshold, MAX_LEVEL } from '../utils/constants.js';
 import { getShapeOffsets } from '../utils/tetrisLogic.js';
 import { playMove, playHardDrop, playSoftDrop, playHold, playLock } from '../utils/soundEffects.js';
+
+function loadCoins() {
+  return parseInt(localStorage.getItem('blendIt_coins') || '0', 10);
+}
+function saveCoins(n) {
+  localStorage.setItem('blendIt_coins', String(n));
+}
+function loadPurchased() {
+  try { return JSON.parse(localStorage.getItem('blendIt_nextSlots') || '[]'); }
+  catch { return []; }
+}
+function savePurchased(arr) {
+  localStorage.setItem('blendIt_nextSlots', JSON.stringify(arr));
+}
 
 const NAV_ITEMS = ['HOME', 'LEVELS', 'RANKS', 'TROPHIES', 'CHATS', 'SETTINGS', 'USER DATA', 'LOG OUT'];
 
@@ -56,9 +71,39 @@ export default function TetrisGame({
 }) {
   const [paused, setPaused] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [showShop, setShowShop] = useState(false);
+  const [coins, setCoins] = useState(loadCoins);
+  const [purchased, setPurchased] = useState(loadPurchased);
 
   const { state, moveLeft, moveRight, softDrop, hardDrop, rotate, rotateCCW, hold, restart } =
-    useTetrisEngine({ startLevel, startScore, paused: paused || showSettings });
+    useTetrisEngine({ startLevel, startScore, paused: paused || showSettings || showShop });
+
+  // Accumulate coins from score earned this session
+  const prevScoreRef = useRef(state.score);
+  useEffect(() => {
+    const gained = state.score - prevScoreRef.current;
+    if (gained > 0) {
+      setCoins(prev => {
+        const next = prev + gained;
+        saveCoins(next);
+        return next;
+      });
+    }
+    prevScoreRef.current = state.score;
+  }, [state.score]);
+
+  const handleBuy = useCallback((slot, price) => {
+    setCoins(prev => {
+      const next = prev - price;
+      saveCoins(next);
+      return next;
+    });
+    setPurchased(prev => {
+      const next = [...prev, slot];
+      savePurchased(next);
+      return next;
+    });
+  }, []);
 
   // Persist max level reached
   useEffect(() => {
@@ -141,15 +186,33 @@ export default function TetrisGame({
               <PiecePreview type={nextPieceType} colors={nextPieceColors} cellSize={12} />
             </div>
           </div>
-          {/* Slots 1–4 — shop-locked */}
-          {[1, 2, 3, 4].map(i => (
-            <div key={i} className="gd-next-box">
-              <span className="gd-next-label">NEXT</span>
-              <div className="gd-next-tile gd-next-tile-shop" style={{ border: '1.5px dashed #334155', background: 'transparent' }}>
-                <span className="gd-next-shop-icon">🔒</span>
+          {/* Slots 1–4 — shop-unlockable */}
+          {[1, 2, 3, 4].map(i => {
+            const isUnlocked = purchased.includes(i);
+            return (
+              <div key={i} className="gd-next-box">
+                <span className="gd-next-label">NEXT</span>
+                {isUnlocked ? (
+                  <div className="gd-next-tile" style={{ border: '1.5px dashed #334155', background: 'transparent' }}>
+                    {/* future: show queued piece */}
+                  </div>
+                ) : (
+                  <button
+                    className="gd-next-tile gd-next-tile-shop"
+                    style={{ border: '1.5px dashed #334155', background: 'transparent', cursor: 'pointer' }}
+                    onClick={() => setShowShop(true)}
+                    title="Open Shop to unlock"
+                  >
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" aria-hidden="true">
+                      <rect x="5" y="11" width="14" height="10" rx="2" fill="#3b82f6" opacity="0.85"/>
+                      <path d="M8 11V7a4 4 0 0 1 8 0v4" stroke="#3b82f6" strokeWidth="2.2" strokeLinecap="round" fill="none"/>
+                      <circle cx="12" cy="16" r="1.5" fill="#1e3a5f"/>
+                    </svg>
+                  </button>
+                )}
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {/* Info column */}
@@ -245,7 +308,16 @@ export default function TetrisGame({
         />
       )}
 
-      {paused && !showSettings && (
+      {showShop && (
+        <ShopModal
+          coins={coins}
+          purchased={purchased}
+          onBuy={handleBuy}
+          onClose={() => setShowShop(false)}
+        />
+      )}
+
+      {paused && !showSettings && !showShop && (
         <div className="gd-pause-overlay">
           <div className="gd-pause-text">PAUSED</div>
           <button className="gd-pause-resume-btn" onClick={() => setPaused(false)}>▶ Resume</button>
