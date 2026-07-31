@@ -3,10 +3,10 @@ import { tetrisReducer, createTetrisInitialState } from '../utils/tetrisLogic.js
 import { getDropInterval, levelThreshold, MAX_LEVEL } from '../utils/constants.js';
 import { playLevelUp, playMerge, playCombo, playGameOver } from '../utils/soundEffects.js';
 
-export function useTetrisEngine({ startLevel = 1, paused = false }) {
+export function useTetrisEngine({ startLevel = 1, startScore = 0, paused = false }) {
   const [state, dispatch] = useReducer(
     tetrisReducer,
-    { startLevel },
+    { startLevel, startScore },
     createTetrisInitialState
   );
 
@@ -66,7 +66,7 @@ export function useTetrisEngine({ startLevel = 1, paused = false }) {
   const rotate     = useCallback(() => dispatch({ type: 'ROTATE' }), []);
   const rotateCCW  = useCallback(() => dispatch({ type: 'ROTATE_CCW' }), []);
   const hold       = useCallback(() => dispatch({ type: 'HOLD' }), []);
-  const restart    = useCallback((level) => dispatch({ type: 'RESTART', level: level ?? startLevel }), [startLevel]);
+  const restart    = useCallback((level) => dispatch({ type: 'RESTART', level: level ?? startLevel, startScore }), [startLevel, startScore]);
 
   return { state, moveLeft, moveRight, softDrop, hardDrop, rotate, rotateCCW, hold, restart };
 }

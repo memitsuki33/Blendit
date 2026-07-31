@@ -140,7 +140,7 @@ function lineClearScore(lines, level) {
 
 // ── State ─────────────────────────────────────────────────────────────────────
 
-export function createTetrisInitialState({ startLevel = 1 } = {}) {
+export function createTetrisInitialState({ startLevel = 1, startScore = 0 } = {}) {
   const board = emptyBoard();
   const nextType   = randomType();
   const nextColors = randomColors();
@@ -152,9 +152,10 @@ export function createTetrisInitialState({ startLevel = 1 } = {}) {
     nextPieceColors: nextColors,
     heldPiece:  null,   // { type, colors }
     holdUsed:   false,
-    score:      0,
+    score:      startScore,
     level:      startLevel,
     startLevel,
+    startScore,
     linesCleared: 0,
     gameOver: false,
     mergeFlash: 0,
@@ -240,7 +241,7 @@ export function tetrisReducer(state, action) {
 
   switch (action.type) {
     case 'RESTART':
-      return createTetrisInitialState({ startLevel: action.level ?? state.startLevel });
+      return createTetrisInitialState({ startLevel: action.level ?? state.startLevel, startScore: action.startScore ?? 0 });
 
     case 'TICK':
     case 'SOFT_DROP': {
