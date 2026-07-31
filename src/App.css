@@ -103,16 +103,31 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
   animation: fadeIn 0.3s ease;
+}
+
+/* Group46 decorative background — left side, black goes transparent */
+.auth-group46-bg {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-40%);
+  height: 90%;
+  width: auto;
+  mix-blend-mode: screen;
+  pointer-events: none;
+  user-select: none;
+  z-index: 0;
 }
 
 .auth-mini-logo {
   position: fixed;
-  top: 18px;
-  left: 20px;
-  width: min(120px, 22vw);
+  top: 14px;
+  left: 16px;
+  width: min(100px, 18vw);
   mix-blend-mode: screen;
-  z-index: 2;
+  z-index: 3;
   pointer-events: none;
 }
 
@@ -123,12 +138,17 @@ body {
   flex-direction: column;
   gap: 14px;
   width: min(360px, 88vw);
-  padding: 28px 32px 32px;
-  background: rgba(15, 23, 42, 0.85);
+  /* allow scrolling on short screens without overflowing the viewport */
+  max-height: calc(100svh - 80px);
+  overflow-y: auto;
+  padding: 24px 28px 28px;
+  background: rgba(15, 23, 42, 0.92);
   border: 2px solid #2563eb;
   border-radius: 18px;
-  backdrop-filter: blur(6px);
+  backdrop-filter: blur(8px);
+  scrollbar-width: none; /* Firefox */
 }
+.auth-card::-webkit-scrollbar { display: none; }
 
 .auth-card-header {
   display: grid;

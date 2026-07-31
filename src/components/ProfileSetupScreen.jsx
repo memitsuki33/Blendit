@@ -12,7 +12,7 @@ export default function ProfileSetupScreen({ onProceed }) {
 
   return (
     <div className="auth-screen">
-      <div className="landing-bg" />
+      <img src="/group46.png" alt="" aria-hidden="true" className="auth-group46-bg" />
 
       {/* Top-left mini logo */}
       <img src="/logo.png" alt="BlendIt" className="auth-mini-logo" draggable={false} />
