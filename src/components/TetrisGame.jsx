@@ -190,26 +190,23 @@ export default function TetrisGame({
           {[1, 2, 3, 4].map(i => {
             const isUnlocked = purchased.includes(i);
             return (
-              <div key={i} className="gd-next-box">
+              <div
+                key={i}
+                className="gd-next-box"
+                style={!isUnlocked ? { cursor: 'pointer' } : undefined}
+                onClick={!isUnlocked ? () => setShowShop(true) : undefined}
+                title={!isUnlocked ? 'Open Shop to unlock' : undefined}
+              >
                 <span className="gd-next-label">NEXT</span>
-                {isUnlocked ? (
-                  <div className="gd-next-tile" style={{ border: '1.5px dashed #334155', background: 'transparent' }}>
-                    {/* future: show queued piece */}
-                  </div>
-                ) : (
-                  <button
-                    className="gd-next-tile gd-next-tile-shop"
-                    style={{ border: '1.5px dashed #334155', background: 'transparent', cursor: 'pointer' }}
-                    onClick={() => setShowShop(true)}
-                    title="Open Shop to unlock"
-                  >
-                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" aria-hidden="true">
+                <div className={`gd-next-tile${isUnlocked ? '' : ' gd-next-tile-shop'}`} style={{ border: '1.5px dashed #334155', background: 'transparent' }}>
+                  {!isUnlocked && (
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" aria-hidden="true" style={{ pointerEvents: 'none' }}>
                       <rect x="5" y="11" width="14" height="10" rx="2" fill="#3b82f6" opacity="0.85"/>
                       <path d="M8 11V7a4 4 0 0 1 8 0v4" stroke="#3b82f6" strokeWidth="2.2" strokeLinecap="round" fill="none"/>
                       <circle cx="12" cy="16" r="1.5" fill="#1e3a5f"/>
                     </svg>
-                  </button>
-                )}
+                  )}
+                </div>
               </div>
             );
           })}

@@ -24,34 +24,53 @@ export default function LoadingScreen({ onDone }) {
       background: '#0f172a',
       display: 'flex', flexDirection: 'column',
       alignItems: 'center', justifyContent: 'center',
-      gap: 48,
+      gap: 40,
       zIndex: 9999,
+      overflow: 'hidden',
     }}>
-      {/* Background image at 40% opacity */}
-      <div style={{
-        position: 'absolute', inset: 0,
-        backgroundImage: 'url(/loading-bg.png)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        opacity: 0.4,
-      }} />
+      {/* Group46 blocks — left side, mix-blend-mode makes black transparent */}
+      <img
+        src="/group46.png"
+        alt=""
+        aria-hidden="true"
+        style={{
+          position: 'absolute',
+          left: 0,
+          top: '50%',
+          transform: 'translateY(-40%)',
+          height: '90%',
+          width: 'auto',
+          mixBlendMode: 'screen',
+          pointerEvents: 'none',
+          userSelect: 'none',
+        }}
+      />
 
-      {/* Logo image */}
+      {/* Logo */}
       <img
         src="/logo.png"
         alt="BlendIt"
-        style={{ width: 'min(560px, 72vw)', imageRendering: 'auto', mixBlendMode: 'screen' }}
+        style={{
+          width: 'min(420px, 65vw)',
+          imageRendering: 'auto',
+          mixBlendMode: 'screen',
+          position: 'relative',
+          zIndex: 1,
+          filter: 'drop-shadow(0 0 24px rgba(245,158,11,0.2))',
+        }}
         draggable={false}
       />
 
       {/* ROYGBIV progress bar */}
       <div style={{
-        width: 'min(560px, 72vw)',
-        height: 8,
-        background: 'rgba(255,255,255,0.09)',
+        width: 'min(340px, 72vw)',
+        height: 7,
+        background: 'rgba(255,255,255,0.08)',
         borderRadius: 4,
         overflow: 'hidden',
         border: '1px solid rgba(255,255,255,0.06)',
+        position: 'relative',
+        zIndex: 1,
       }}>
         <div style={{
           width: `${progress * 100}%`,
@@ -59,6 +78,7 @@ export default function LoadingScreen({ onDone }) {
           height: '100%',
           background: 'linear-gradient(90deg, #e53935, #f57c00, #fdd835, #43a047, #1e88e5, #3949ab, #8e24aa)',
           borderRadius: 4,
+          transition: 'width 60ms linear',
         }} />
       </div>
     </div>
