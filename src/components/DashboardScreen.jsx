@@ -177,6 +177,7 @@ export default function DashboardScreen({
           MOBILE layout (hidden on desktop)
           ════════════════════════════════════════ */}
       <div className="dashboard-mobile">
+        <img src="/group46.png" alt="" aria-hidden="true" className="auth-group46-bg" />
 
         {/* Home panel */}
         {panel === 'home' && (
