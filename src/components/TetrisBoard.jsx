@@ -47,7 +47,7 @@ export function PiecePreview({ type, colors, rotation = 0, cellSize = 16 }) {
   );
 }
 
-export default function TetrisBoard({ state, animSpeed = 'normal' }) {
+export default function TetrisBoard({ state, animSpeed = 'normal', hidden = false }) {
   const { board, currentPiece, gameOver, mergeStreak = 0 } = state;
   const { transition: transMs, merge: mergeMs } = ANIM_DURATIONS[animSpeed] ?? ANIM_DURATIONS.normal;
 
@@ -101,7 +101,7 @@ export default function TetrisBoard({ state, animSpeed = 'normal' }) {
   const transStyle = transMs > 0 ? `background-color ${transMs}ms ease` : 'none';
 
   return (
-    <div className="board-outer">
+    <div className="board-outer" style={hidden ? { visibility: 'hidden' } : undefined}>
       {mergeMs > 0 && (
         <style>{`
           @keyframes mergePopAnim {

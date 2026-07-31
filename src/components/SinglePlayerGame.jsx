@@ -126,7 +126,7 @@ export default function SinglePlayerGame({
 
       <div className="game-wrapper">
         <div className="player-section">
-          <GameBoard state={state} animSpeed={animSpeed} />
+          <GameBoard state={state} animSpeed={animSpeed} hidden={showSettings} />
         </div>
         <InfoPanel state={state} mode="single" onRestart={() => handleRestart(0)} />
       </div>

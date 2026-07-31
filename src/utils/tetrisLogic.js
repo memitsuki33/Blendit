@@ -1,5 +1,5 @@
 import { ROWS, COLS, COLOR_COUNT, comboMultiplier } from './constants.js';
-import { processMerges, applyGravity, emptyBoard } from './gameLogic.js';
+import { processMerges, emptyBoard } from './gameLogic.js';
 
 // ── Piece types ──────────────────────────────────────────────────────────────
 const PIECE_TYPES = ['I', 'O', 'T', 'S', 'Z', 'J', 'L'];
@@ -186,23 +186,17 @@ function lockTetrisPiece(state) {
     newBoard[row][col] = value;
   }
 
-  // 1. Clear completed lines (standard Tetris)
-  const { board: clearedBoard, linesCleared } = clearLines(newBoard);
-  const lineScore = lineClearScore(linesCleared, level);
+  // Blendit merge cascade (no line-clearing, no post-merge gravity)
+  const { board: mergedBoard, score: mergeScoreVal, chainCount } = processMerges(newBoard);
 
-  // 2. Blendit merge cascade
-  const { board: mergedBoard, score: mergeScoreVal, chainCount } = processMerges(clearedBoard);
-
-  // 3. Gravity to collapse merge gaps
-  const finalBoard = applyGravity(mergedBoard);
+  const finalBoard = mergedBoard;
 
   // Combo / streak
   const newStreak = mergeScoreVal > 0 ? mergeStreak + 1 : 0;
   const multiplier = comboMultiplier(newStreak);
   const boostedMergeScore = mergeScoreVal * multiplier;
-  const newScore = score + lineScore + boostedMergeScore;
+  const newScore = score + boostedMergeScore;
   const newTurns = turns + 1;
-  const newLinesCleared = (state.linesCleared || 0) + linesCleared;
   const streakBonus = newStreak > 0 && newStreak % 3 === 0 ? 1 : 0;
   const newStreakMilestone = streakMilestone + (streakBonus > 0 ? 1 : 0);
 
@@ -222,7 +216,6 @@ function lockTetrisPiece(state) {
     holdUsed: false,
     score: newScore,
     level,
-    linesCleared: newLinesCleared,
     gameOver,
     mergeFlash: mergeScoreVal > 0 ? state.mergeFlash + 1 : state.mergeFlash,
     mergeStreak: gameOver ? 0 : newStreak,
@@ -230,7 +223,7 @@ function lockTetrisPiece(state) {
     lastChainCount: chainCount,
     lastComboMultiplier: multiplier,
     turns: newTurns,
-    timedGarbageThisTurn: linesCleared > 0,
+    timedGarbageThisTurn: false,
   };
 }
 

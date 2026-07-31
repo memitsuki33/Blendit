@@ -11,7 +11,7 @@ const ANIM_DURATIONS = {
   '4x':   { transition: 30,  merge: 75  },
 };
 
-export default function GameBoard({ state, animSpeed = 'normal' }) {
+export default function GameBoard({ state, animSpeed = 'normal', hidden = false }) {
   const { board, currentPiece, gameOver, mergeStreak = 0, streakMilestone = 0 } = state;
   const { transition: transMs, merge: mergeMs } = ANIM_DURATIONS[animSpeed] ?? ANIM_DURATIONS.normal;
 
@@ -75,7 +75,7 @@ export default function GameBoard({ state, animSpeed = 'normal' }) {
     : '';
 
   return (
-    <div className="board-outer">
+    <div className="board-outer" style={hidden ? { visibility: 'hidden' } : undefined}>
       {mergeMs > 0 && (
         <style>{`
           @keyframes mergePopAnim {

@@ -125,7 +125,7 @@ export default function TetrisGame({
       {/* Left — board (same position as GameDashboard) */}
       <div className="gd-card-wrap">
         <div className="player-section">
-          <TetrisBoard state={state} animSpeed={animSpeed} />
+          <TetrisBoard state={state} animSpeed={animSpeed} hidden={paused || showSettings} />
         </div>
       </div>
 
@@ -176,12 +176,6 @@ export default function TetrisGame({
                 {needed !== null ? `${formatScore(needed)} to go` : 'Max'}
               </span>
             </div>
-          </div>
-
-          {/* Lines cleared (Tetris-specific) */}
-          <div className="gd-info-block">
-            <span className="gd-info-label">LINES</span>
-            <span className="gd-info-value">{linesCleared}</span>
           </div>
 
           {/* Hold */}
