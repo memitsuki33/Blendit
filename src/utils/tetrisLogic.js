@@ -50,8 +50,15 @@ const SHAPES = {
   ],
 };
 
-// Wall-kick offsets to try on rotation (dr, dc)
-const ROTATION_KICKS = [[0,0],[0,-1],[0,1],[-1,0],[-2,0],[-1,-1],[-1,1],[1,0]];
+// Wall-kick offsets to try on rotation (dr, dc).
+// Only filled cells are ever checked — empty cells in the 4×4 bounding box are
+// completely ignored, so they never block movement near a wall.
+const ROTATION_KICKS = [
+  [0,0],[0,-1],[0,1],[0,-2],[0,2],[0,-3],[0,3],
+  [-1,0],[-1,-1],[-1,1],[-1,-2],[-1,2],
+  [-2,0],[-2,-1],[-2,1],
+  [1,0],[1,-1],[1,1],
+];
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 

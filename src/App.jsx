@@ -70,7 +70,7 @@ export default function App() {
     return (
       <DashboardScreen
         onSinglePlayer={(cfg) => { setGameConfig(cfg); setScreen('game-dashboard'); }}
-        onTetris={() => setScreen('tetris')}
+        onTetris={(cfg) => { setGameConfig(cfg); setScreen('tetris'); }}
         onPvP={() => setScreen('battle-select')}
         onLogOut={() => setScreen('landing')}
         animSpeed={animSpeed}
@@ -100,7 +100,8 @@ export default function App() {
     return (
       <TetrisGame
         onBack={goMenu}
-        startLevel={1}
+        startLevel={gameConfig?.level ?? 1}
+        startScore={gameConfig?.startScore ?? 0}
         animSpeed={animSpeed}
       />
     );

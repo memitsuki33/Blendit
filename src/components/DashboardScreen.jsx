@@ -72,11 +72,49 @@ export default function DashboardScreen({
           <button className="dash-btn dash-btn-orange" onClick={() => setPanel('normal-mode')}>
             Normal Mode
           </button>
-          <button className="dash-btn dash-btn-blue" onClick={onTetris}>Tetris Mode</button>
+          <button className="dash-btn dash-btn-blue" onClick={() => setPanel('tetris-mode')}>Tetris Mode</button>
           <button className="dash-btn dash-btn-ghost" onClick={() => setShowColors(true)}>
             Color Cycle Guide
           </button>
           <button className="dash-btn dash-btn-ghost" onClick={() => setPanel('home')}>Back</button>
+        </div>
+      )}
+
+      {/* ── TETRIS MODE panel ── */}
+      {panel === 'tetris-mode' && (
+        <div className="dashboard-center dashboard-sub-center">
+          <div className="nm-header">
+            <button className="nm-back-btn" onClick={() => setPanel('single-player')}>Back</button>
+            <h2 className="nm-title">Single Player<br />(Tetris Mode)</h2>
+          </div>
+
+          <div className="nm-list">
+            {/* Level 1 — always available */}
+            <button
+              className="dash-btn dash-btn-blue nm-start0"
+              onClick={() => onTetris({ level: 1, startScore: 0 })}
+            >
+              Start at Level 1
+            </button>
+
+            {/* Jump levels */}
+            {JUMP_LEVELS.map(lv => {
+              const locked = lv > maxUnlocked;
+              const pts = levelThreshold(lv);
+              const startScore = Math.floor(pts * 0.75);
+              return (
+                <button
+                  key={lv}
+                  className={`nm-level-row${locked ? ' nm-level-locked' : ''}`}
+                  onClick={locked ? undefined : () => onTetris({ level: lv, startScore })}
+                  disabled={locked}
+                >
+                  <span className="nm-lv-label">Lv {lv}</span>
+                  <span className="nm-lv-pts">{fmtScore(pts)} pts to reach</span>
+                </button>
+              );
+            })}
+          </div>
         </div>
       )}
 
