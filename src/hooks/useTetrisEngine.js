@@ -3,7 +3,7 @@ import { tetrisReducer, createTetrisInitialState } from '../utils/tetrisLogic.js
 import { getDropInterval, levelThreshold, MAX_LEVEL } from '../utils/constants.js';
 import { playLevelUp, playMerge, playCombo, playGameOver } from '../utils/soundEffects.js';
 
-export function useTetrisEngine({ startLevel = 1, startScore = 0, paused = false }) {
+export function useTetrisEngine({ startLevel = 1, startScore = 0, paused = false, gravity = false }) {
   const [state, dispatch] = useReducer(
     tetrisReducer,
     { startLevel, startScore },
@@ -19,6 +19,7 @@ export function useTetrisEngine({ startLevel = 1, startScore = 0, paused = false
     if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; }
     if (state.gameOver || paused) return;
 
+    if (!gravity) return;
     const interval = getDropInterval(state.level);
     if (!interval) return;
 
