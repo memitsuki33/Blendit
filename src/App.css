@@ -2299,6 +2299,147 @@ kbd {
   margin-top: 1px;
 }
 
+/* ═══════════════════════════════════════════════════════════
+   TETRIS MODE
+   ═══════════════════════════════════════════════════════════ */
+
+.tetris-wrapper {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 20px;
+  padding: 20px 24px;
+  min-height: 100svh;
+  box-sizing: border-box;
+}
+
+/* ── Side panels ── */
+.tetris-side-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 160px;
+  flex-shrink: 0;
+  padding-top: 36px; /* align with mode badge */
+}
+
+.tetris-panel-card {
+  background: var(--panel-bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.tetris-panel-label {
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.tetris-stat-value {
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: var(--text);
+  letter-spacing: -1px;
+}
+
+.tetris-preview-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 0;
+}
+
+.tetris-preview-empty {
+  width: 72px;
+  height: 72px;
+  border: 1.5px dashed #334155;
+  border-radius: 6px;
+}
+
+/* Preview mini-grid */
+.tetris-preview-grid {
+  display: grid;
+  gap: 2px;
+}
+.tetris-preview-cell {
+  border-radius: 3px;
+}
+
+/* Controls card */
+.tetris-controls-card {
+  align-items: flex-start;
+}
+.tetris-ctrl-grid {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 3px 10px;
+  font-size: 0.62rem;
+  color: var(--text-dim);
+  width: 100%;
+}
+.tetris-ctrl-grid span:nth-child(even) {
+  color: var(--text);
+  font-weight: 700;
+  text-align: right;
+}
+
+.tetris-back-btn {
+  margin-top: 6px;
+  align-self: flex-start;
+}
+
+.tetris-restart-btn {
+  margin-top: 4px;
+  width: 100%;
+}
+
+/* ── Board column ── */
+.tetris-board-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+}
+
+.tetris-mode-badge {
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--accent);
+  opacity: 0.75;
+  height: 20px;
+  line-height: 20px;
+}
+
+/* Pause overlay */
+.tetris-pause-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.72);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  z-index: 20;
+  border-radius: 8px;
+}
+.tetris-pause-text {
+  font-size: 2rem;
+  font-weight: 900;
+  letter-spacing: 6px;
+  color: #fff;
+}
+
 /* ===== WIN BANNER variants ===== */
 .win-banner {
   background: var(--panel-bg);

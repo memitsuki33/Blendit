@@ -13,6 +13,7 @@ import BattleGame from './components/BattleGame.jsx';
 import MobileLobby from './components/MobileLobby.jsx';
 import MobileBattleGame from './components/MobileBattleGame.jsx';
 import Tutorial from './components/Tutorial.jsx';
+import TetrisGame from './components/TetrisGame.jsx';
 import { setSoundEnabled, setMusicEnabled } from './utils/soundEffects.js';
 
 export default function App() {
@@ -69,6 +70,7 @@ export default function App() {
     return (
       <DashboardScreen
         onSinglePlayer={(cfg) => { setGameConfig(cfg); setScreen('game-dashboard'); }}
+        onTetris={() => setScreen('tetris')}
         onPvP={() => setScreen('battle-select')}
         onLogOut={() => setScreen('landing')}
         animSpeed={animSpeed}
@@ -90,6 +92,16 @@ export default function App() {
         animSpeed={animSpeed} onAnimSpeed={setAnimSpeed}
         soundEnabled={soundEnabled} onSoundEnabled={setSoundEnabledState}
         musicEnabled={musicEnabled} onMusicEnabled={setMusicEnabledState}
+      />
+    );
+  }
+
+  if (screen === 'tetris') {
+    return (
+      <TetrisGame
+        onBack={goMenu}
+        startLevel={1}
+        animSpeed={animSpeed}
       />
     );
   }

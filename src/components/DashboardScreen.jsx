@@ -15,7 +15,7 @@ function fmtScore(n) {
 }
 
 export default function DashboardScreen({
-  onSinglePlayer, onPvP, onLogOut,
+  onSinglePlayer, onTetris, onPvP, onLogOut,
   animSpeed, onAnimSpeed,
   soundEnabled, onSoundEnabled,
   musicEnabled, onMusicEnabled,
@@ -72,7 +72,7 @@ export default function DashboardScreen({
           <button className="dash-btn dash-btn-orange" onClick={() => setPanel('normal-mode')}>
             Normal Mode
           </button>
-          <button className="dash-btn dash-btn-blue">Tetris Mode</button>
+          <button className="dash-btn dash-btn-blue" onClick={onTetris}>Tetris Mode</button>
           <button className="dash-btn dash-btn-ghost" onClick={() => setShowColors(true)}>
             Color Cycle Guide
           </button>
