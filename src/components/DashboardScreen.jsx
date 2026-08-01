@@ -71,7 +71,7 @@ export default function DashboardScreen({
           {JUMP_LEVELS.map(lv => {
             const locked = lv > maxUnlocked;
             const pts = levelThreshold(lv);
-            const startScore = Math.floor(pts * 0.75);
+            const startScore = Math.floor(pts * 0.95);
             return (
               <button
                 key={lv}
@@ -106,7 +106,7 @@ export default function DashboardScreen({
           {JUMP_LEVELS.map(lv => {
             const locked = lv > maxUnlocked;
             const pts = levelThreshold(lv);
-            const startScore = Math.floor(pts * 0.75);
+            const startScore = Math.floor(pts * 0.95);
             return (
               <button
                 key={lv}
@@ -235,7 +235,7 @@ export default function DashboardScreen({
                 <button
                   key={lv}
                   className={`nm-level-row db-mobile-level${locked ? ' nm-level-locked' : ''}`}
-                  onClick={locked ? undefined : () => onTetris({ level: lv, startScore: Math.floor(pts * 0.75) })}
+                  onClick={locked ? undefined : () => onTetris({ level: lv, startScore: Math.floor(pts * 0.95) })}
                   disabled={locked}
                 >
                   <span className="nm-lv-label">Lv {lv}</span>
@@ -260,7 +260,7 @@ export default function DashboardScreen({
                 <button
                   key={lv}
                   className={`nm-level-row db-mobile-level${locked ? ' nm-level-locked' : ''}`}
-                  onClick={locked ? undefined : () => onSinglePlayer({ level: lv, startScore: Math.floor(pts * 0.75) })}
+                  onClick={locked ? undefined : () => onSinglePlayer({ level: lv, startScore: Math.floor(pts * 0.95) })}
                   disabled={locked}
                 >
                   <span className="nm-lv-label">Lv {lv}</span>
