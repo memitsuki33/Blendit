@@ -2683,6 +2683,190 @@ kbd {
   color: #fff;
 }
 
+/* ===== MOBILE SINGLE PLAYER (new layout) ===== */
+/*
+ * Board internal overhead:
+ *   width  = 10*cell + 9*gap + 2*gap + 2*border = 10*cell + 11*3 + 4 = 10*cell + 37px
+ *   height = 20*cell + 19*gap + 2*gap + 2*border = 20*cell + 21*3 + 4 = 20*cell + 67px
+ *
+ * Right panel: 70px + 4px gap + 4px outer-left-pad = 78px width overhead
+ * Controls row: 72px height + 4px padding = 76px height overhead
+ *
+ * cell_w = (svw - 78 - 37) / 10 = (svw - 115) / 10
+ * cell_h = (svh - 76 - 67) / 20 = (svh - 143) / 20
+ */
+.msp-root {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100svh;
+  overflow: hidden;
+  --cell-size: min(44px, calc((100svw - 115px) / 10), calc((100svh - 143px) / 20));
+  --board-gap: 3px;
+}
+
+.msp-main {
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.msp-board-area {
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 4px 4px 0 4px;
+  overflow: hidden;
+}
+
+/* Right info panel */
+.msp-right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 4px 4px 0;
+  width: 70px;
+  overflow-y: auto;
+  scrollbar-width: none;
+  flex-shrink: 0;
+}
+.msp-right::-webkit-scrollbar { display: none; }
+
+/* Generic box (NEXT / SCORE / LEVEL / HOLD) */
+.msp-panel-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  background: var(--panel-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 4px 3px;
+  width: 100%;
+  flex-shrink: 0;
+}
+
+.msp-panel-label {
+  font-size: 0.4rem;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  line-height: 1;
+}
+
+.msp-panel-val {
+  font-size: 0.68rem;
+  font-weight: 900;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+}
+.msp-panel-val-red { color: var(--danger); }
+
+.msp-panel-tile {
+  width: 34px;
+  height: 34px;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.msp-panel-tile-empty {
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 4px,
+    rgba(255, 255, 255, 0.045) 4px,
+    rgba(255, 255, 255, 0.045) 8px
+  );
+  border: 1px solid var(--border);
+}
+
+/* SETTINGS / MENU side buttons */
+.msp-side-btn {
+  width: 100%;
+  background: var(--panel-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.38rem;
+  font-weight: 900;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 8px 2px;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  flex-shrink: 0;
+  transition: background 0.1s;
+}
+.msp-side-btn:active { background: var(--card-bg); }
+
+.msp-side-btn-pill {
+  border-radius: 20px;
+  font-size: 0.44rem;
+  padding: 7px 2px;
+}
+
+/* ── Bottom touch controls ── */
+.msp-controls {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-around;
+  gap: 5px;
+  padding: 5px 6px 8px;
+  height: 72px;
+  flex-shrink: 0;
+}
+
+.msp-ctrl-btn {
+  flex: 1;
+  height: 54px;
+  background: var(--panel-bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.7rem;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  box-shadow: 0 4px 0 #060d1a, inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  transition: none;
+  position: relative;
+  top: 0;
+  user-select: none;
+}
+.msp-ctrl-btn:active {
+  box-shadow: 0 1px 0 #060d1a, inset 0 2px 4px rgba(0, 0, 0, 0.5);
+  top: 3px;
+}
+
+/* Yellow hard-drop button */
+.msp-ctrl-hard {
+  background: #f59e0b;
+  border-color: #b45309;
+  box-shadow: 0 4px 0 #78350f, inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+.msp-ctrl-hard:active {
+  box-shadow: 0 1px 0 #78350f, inset 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.msp-restart-btn {
+  width: 200px;
+}
+
 /* ===== WIN BANNER variants ===== */
 .win-banner {
   background: var(--panel-bg);
