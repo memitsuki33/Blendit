@@ -21,6 +21,15 @@ export default function MobileSinglePlayerGame({
   const [showColorGuide, setShowColorGuide] = useState(true);
   const [showSettings, setShowSettings] = useState(false);
 
+  // 0.1 s visual press feedback
+  const [pressedKey, setPressedKey] = useState(null);
+  const pressTimer = useRef(null);
+  const flashPress = (key) => {
+    if (pressTimer.current) clearTimeout(pressTimer.current);
+    setPressedKey(key);
+    pressTimer.current = setTimeout(() => setPressedKey(null), 100);
+  };
+
   // Persist max level reached for level-jump unlocks
   useEffect(() => {
     if (state.level > 0) {
@@ -43,94 +52,84 @@ export default function MobileSinglePlayerGame({
   const nextColor = getTileColor(state.nextPieceValue);
   const heldColor = state.heldValue ? getTileColor(state.heldValue) : null;
   const holdUsed = state.holdUsed ?? false;
-
   const blocked = state.gameOver || showColorGuide || showSettings;
 
-  const handleLeft      = () => { if (blocked) return; playMove();     moveLeft(); };
-  const handleRight     = () => { if (blocked) return; playMove();     moveRight(); };
-  const handleSoftDrop  = () => { if (blocked) return; playSoftDrop(); softDrop(); };
-  const handleHardDrop  = () => { if (blocked) return; playHardDrop(); hardDrop(); };
-  const handleHold      = () => { if (blocked) return; playHold();     hold(); };
+  // Game actions — fire immediately, visual flash runs in parallel
+  const handleLeft     = () => { if (blocked) return; flashPress('left');  playMove();     moveLeft(); };
+  const handleRight    = () => { if (blocked) return; flashPress('right'); playMove();     moveRight(); };
+  const handleSoftDrop = () => { if (blocked) return; flashPress('soft');  playSoftDrop(); softDrop(); };
+  const handleHardDrop = () => { if (blocked) return; flashPress('hard');  playHardDrop(); hardDrop(); };
+  const handleHold     = () => { if (blocked) return; flashPress('hold');  playHold();     hold(); };
 
-  const handleRestart = () => {
-    restart(0);
-    setShowColorGuide(true);
-  };
+  const handleRestart = () => { restart(0); setShowColorGuide(true); };
 
-  // Wrap touch handlers to prevent ghost clicks
+  // Prevent ghost clicks from touch → click double-fire
   const touch = (fn) => (e) => { e.preventDefault(); fn(); };
+
+  const ctrlClass = (key, extra = '') =>
+    `msp-ctrl-btn${pressedKey === key ? ' msp-ctrl-pressed' : ''}${extra ? ' ' + extra : ''}`;
 
   return (
     <div className="msp-root">
-      {/* ── Main area: board (left) + right panel ── */}
-      <div className="msp-main">
 
-        {/* Game board */}
-        <div className="msp-board-area">
-          <GameBoard state={state} animSpeed={animSpeed} />
+      {/* ── Board — full width, takes all remaining height ── */}
+      <div className="msp-board-area">
+        <GameBoard state={state} animSpeed={animSpeed} />
+      </div>
+
+      {/* ── NEXT row — 5 tiles horizontal ── */}
+      <div className="msp-next-row">
+        {[0, 1, 2, 3, 4].map((i) => (
+          <div key={i} className="msp-next-slot">
+            <span className="msp-slot-label">NEXT</span>
+            {i === 0 ? (
+              <div className="msp-slot-tile" style={{ backgroundColor: nextColor.bg }} />
+            ) : (
+              <div className="msp-slot-tile msp-slot-tile-empty" />
+            )}
+          </div>
+        ))}
+      </div>
+
+      {/* ── Info row: score | level | hold display | settings | menu ── */}
+      <div className="msp-info-row">
+        <div className="msp-info-chip">
+          <span className="msp-chip-label">SCORE</span>
+          <span className="msp-chip-val">{formatScore(state.score)}</span>
         </div>
 
-        {/* Right panel */}
-        <div className="msp-right">
-
-          {/* 5 NEXT slots — first is real, rest are empty placeholders */}
-          {[0, 1, 2, 3, 4].map((i) => (
-            <div key={i} className="msp-panel-box">
-              <span className="msp-panel-label">NEXT</span>
-              {i === 0 ? (
-                <div
-                  className="msp-panel-tile"
-                  style={{ backgroundColor: nextColor.bg }}
-                />
-              ) : (
-                <div className="msp-panel-tile msp-panel-tile-empty" />
-              )}
-            </div>
-          ))}
-
-          {/* Score */}
-          <div className="msp-panel-box">
-            <span className="msp-panel-label">SCORE</span>
-            <span className="msp-panel-val">{formatScore(state.score)}</span>
-          </div>
-
-          {/* Level */}
-          <div className="msp-panel-box">
-            <span className="msp-panel-label">LEVEL</span>
-            <span className="msp-panel-val msp-panel-val-red">{state.level}</span>
-          </div>
-
-          {/* Hold display */}
-          <div className="msp-panel-box">
-            <span className="msp-panel-label">HOLD</span>
-            <div
-              className="msp-panel-tile"
-              style={{
-                backgroundColor: heldColor ? heldColor.bg : 'transparent',
-                border: heldColor ? 'none' : '1.5px dashed var(--border)',
-                opacity: holdUsed ? 0.4 : 1,
-              }}
-            />
-          </div>
-
-          {/* Settings */}
-          <button
-            className="msp-side-btn"
-            onTouchStart={touch(() => setShowSettings(true))}
-            onClick={() => setShowSettings(true)}
-          >
-            SETTINGS
-          </button>
-
-          {/* Menu */}
-          <button
-            className="msp-side-btn msp-side-btn-pill"
-            onTouchStart={touch(onBack)}
-            onClick={onBack}
-          >
-            MENU
-          </button>
+        <div className="msp-info-chip">
+          <span className="msp-chip-label">LEVEL</span>
+          <span className="msp-chip-val msp-chip-val-red">{state.level}</span>
         </div>
+
+        <div className="msp-info-chip">
+          <span className="msp-chip-label">HOLD</span>
+          <div
+            className="msp-hold-mini"
+            style={{
+              backgroundColor: heldColor ? heldColor.bg : 'transparent',
+              border: heldColor ? 'none' : '1px dashed var(--border)',
+              opacity: holdUsed ? 0.4 : 1,
+            }}
+          />
+        </div>
+
+        <button
+          className="msp-info-btn"
+          onTouchStart={touch(() => setShowSettings(true))}
+          onClick={() => setShowSettings(true)}
+        >
+          SETTINGS
+        </button>
+
+        <button
+          className="msp-info-btn msp-info-btn-pill"
+          onTouchStart={touch(onBack)}
+          onClick={onBack}
+        >
+          MENU
+        </button>
       </div>
 
       {/* ── Bottom touch controls ── */}
@@ -141,48 +140,11 @@ export default function MobileSinglePlayerGame({
           </button>
         ) : (
           <>
-            {/* HOLD */}
-            <button
-              className="msp-ctrl-btn"
-              onTouchStart={touch(handleHold)}
-              onClick={handleHold}
-            >
-              HOLD
-            </button>
-
-            {/* Hard drop — yellow */}
-            <button
-              className="msp-ctrl-btn msp-ctrl-hard"
-              onTouchStart={touch(handleHardDrop)}
-              onClick={handleHardDrop}
-            />
-
-            {/* Left */}
-            <button
-              className="msp-ctrl-btn"
-              onTouchStart={touch(handleLeft)}
-              onClick={handleLeft}
-            >
-              ◀
-            </button>
-
-            {/* Soft drop */}
-            <button
-              className="msp-ctrl-btn"
-              onTouchStart={touch(handleSoftDrop)}
-              onClick={handleSoftDrop}
-            >
-              ▼
-            </button>
-
-            {/* Right */}
-            <button
-              className="msp-ctrl-btn"
-              onTouchStart={touch(handleRight)}
-              onClick={handleRight}
-            >
-              ▶
-            </button>
+            <button className={ctrlClass('hold')}  onTouchStart={touch(handleHold)}     onClick={handleHold}>HOLD</button>
+            <button className={ctrlClass('hard', 'msp-ctrl-hard')} onTouchStart={touch(handleHardDrop)} onClick={handleHardDrop} />
+            <button className={ctrlClass('left')}  onTouchStart={touch(handleLeft)}     onClick={handleLeft}>◀</button>
+            <button className={ctrlClass('soft')}  onTouchStart={touch(handleSoftDrop)} onClick={handleSoftDrop}>▼</button>
+            <button className={ctrlClass('right')} onTouchStart={touch(handleRight)}    onClick={handleRight}>▶</button>
           </>
         )}
       </div>

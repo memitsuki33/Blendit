@@ -2683,17 +2683,23 @@ kbd {
   color: #fff;
 }
 
-/* ===== MOBILE SINGLE PLAYER (new layout) ===== */
+/* ===== MOBILE SINGLE PLAYER (horizontal bottom layout) ===== */
 /*
- * Board internal overhead:
- *   width  = 10*cell + 9*gap + 2*gap + 2*border = 10*cell + 11*3 + 4 = 10*cell + 37px
- *   height = 20*cell + 19*gap + 2*gap + 2*border = 20*cell + 21*3 + 4 = 20*cell + 67px
+ * Board fills full width; info lives in rows below the board.
  *
- * Right panel: 70px + 4px gap + 4px outer-left-pad = 78px width overhead
- * Controls row: 72px height + 4px padding = 76px height overhead
+ * Board internal overhead (px):
+ *   width  : 10*cell + 11*gap + 4*border = 10*cell + 33 + 4 = 10*cell + 37
+ *   height : 20*cell + 21*gap + 4*border = 20*cell + 63 + 4 = 20*cell + 67
  *
- * cell_w = (svw - 78 - 37) / 10 = (svw - 115) / 10
- * cell_h = (svh - 76 - 67) / 20 = (svh - 143) / 20
+ * Bottom rows (height budget):
+ *   next-row  : 54px
+ *   info-row  : 38px
+ *   ctrl-row  : 64px
+ *   gaps+pad  : ~18px
+ *   total     : ~174px
+ *
+ * cell_w = (svw - 8px_pad - 37) / 10 = (svw - 45) / 10
+ * cell_h = (svh - 174 - 67) / 20    = (svh - 241) / 20
  */
 .msp-root {
   display: flex;
@@ -2701,43 +2707,35 @@ kbd {
   width: 100%;
   height: 100svh;
   overflow: hidden;
-  --cell-size: min(44px, calc((100svw - 115px) / 10), calc((100svh - 143px) / 20));
+  padding: 4px 4px 6px;
+  gap: 4px;
+  --cell-size: min(44px, calc((100svw - 45px) / 10), calc((100svh - 241px) / 20));
   --board-gap: 3px;
 }
 
-.msp-main {
-  display: flex;
-  flex-direction: row;
-  flex: 1;
-  min-height: 0;
-  overflow: hidden;
-}
-
+/* Board — flex 1, centred */
 .msp-board-area {
   flex: 1;
+  min-height: 0;
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  padding: 4px 4px 0 4px;
   overflow: hidden;
 }
 
-/* Right info panel */
-.msp-right {
+/* ── NEXT row: 5 tiles side by side ── */
+.msp-next-row {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
+  justify-content: space-around;
   gap: 4px;
-  padding: 4px 4px 4px 0;
-  width: 70px;
-  overflow-y: auto;
-  scrollbar-width: none;
   flex-shrink: 0;
+  height: 54px;
 }
-.msp-right::-webkit-scrollbar { display: none; }
 
-/* Generic box (NEXT / SCORE / LEVEL / HOLD) */
-.msp-panel-box {
+.msp-next-slot {
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -2745,37 +2743,28 @@ kbd {
   background: var(--panel-bg);
   border: 1px solid var(--border);
   border-radius: 8px;
-  padding: 4px 3px;
-  width: 100%;
-  flex-shrink: 0;
+  padding: 4px 2px;
+  height: 100%;
+  justify-content: center;
 }
 
-.msp-panel-label {
-  font-size: 0.4rem;
+.msp-slot-label {
+  font-size: 0.38rem;
   font-weight: 900;
-  letter-spacing: 1.5px;
+  letter-spacing: 1.2px;
   text-transform: uppercase;
   color: var(--text-dim);
   line-height: 1;
 }
 
-.msp-panel-val {
-  font-size: 0.68rem;
-  font-weight: 900;
-  color: var(--text);
-  font-variant-numeric: tabular-nums;
-  line-height: 1.2;
-}
-.msp-panel-val-red { color: var(--danger); }
-
-.msp-panel-tile {
-  width: 34px;
-  height: 34px;
-  border-radius: 6px;
+.msp-slot-tile {
+  width: 26px;
+  height: 26px;
+  border-radius: 5px;
   flex-shrink: 0;
 }
 
-.msp-panel-tile-empty {
+.msp-slot-tile-empty {
   background: repeating-linear-gradient(
     -45deg,
     transparent,
@@ -2786,80 +2775,130 @@ kbd {
   border: 1px solid var(--border);
 }
 
-/* SETTINGS / MENU side buttons */
-.msp-side-btn {
-  width: 100%;
+/* ── Info row: score | level | hold | settings | menu ── */
+.msp-info-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  height: 38px;
+}
+
+.msp-info-chip {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
   background: var(--panel-bg);
   border: 1px solid var(--border);
-  border-radius: 8px;
-  color: var(--text);
-  font-family: inherit;
-  font-size: 0.38rem;
+  border-radius: 7px;
+  height: 100%;
+}
+
+.msp-chip-label {
+  font-size: 0.36rem;
   font-weight: 900;
   letter-spacing: 1px;
   text-transform: uppercase;
-  padding: 8px 2px;
+  color: var(--text-dim);
+  line-height: 1;
+}
+
+.msp-chip-val {
+  font-size: 0.72rem;
+  font-weight: 900;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+.msp-chip-val-red { color: var(--danger); }
+
+/* HOLD mini tile inside info chip */
+.msp-hold-mini {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+}
+
+/* SETTINGS / MENU inline buttons */
+.msp-info-btn {
+  flex: 1.2;
+  height: 100%;
+  background: var(--panel-bg);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.36rem;
+  font-weight: 900;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
   cursor: pointer;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
-  flex-shrink: 0;
   transition: background 0.1s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-.msp-side-btn:active { background: var(--card-bg); }
+.msp-info-btn:active { background: var(--card-bg); }
 
-.msp-side-btn-pill {
-  border-radius: 20px;
-  font-size: 0.44rem;
-  padding: 7px 2px;
-}
+.msp-info-btn-pill { border-radius: 20px; }
 
 /* ── Bottom touch controls ── */
 .msp-controls {
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: space-around;
   gap: 5px;
-  padding: 5px 6px 8px;
-  height: 72px;
   flex-shrink: 0;
+  height: 64px;
 }
 
 .msp-ctrl-btn {
   flex: 1;
-  height: 54px;
+  height: 100%;
   background: var(--panel-bg);
   border: 1px solid var(--border);
   border-radius: 10px;
   color: var(--text);
   font-family: inherit;
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   font-weight: 900;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.3px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
+  /* resting 3-D shadow */
   box-shadow: 0 4px 0 #060d1a, inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  transition: none;
+  /* 0.1 s press animation */
+  transition: box-shadow 0.1s ease, top 0.1s ease, background 0.1s ease;
   position: relative;
   top: 0;
   user-select: none;
 }
-.msp-ctrl-btn:active {
+
+/* Programmatic press class — set for 100 ms via JS flashPress() */
+.msp-ctrl-btn.msp-ctrl-pressed {
   box-shadow: 0 1px 0 #060d1a, inset 0 2px 4px rgba(0, 0, 0, 0.5);
   top: 3px;
+  background: var(--card-bg);
 }
 
-/* Yellow hard-drop button */
+/* Yellow hard-drop */
 .msp-ctrl-hard {
   background: #f59e0b;
   border-color: #b45309;
   box-shadow: 0 4px 0 #78350f, inset 0 1px 0 rgba(255, 255, 255, 0.18);
 }
-.msp-ctrl-hard:active {
+.msp-ctrl-hard.msp-ctrl-pressed {
+  background: #d97706;
   box-shadow: 0 1px 0 #78350f, inset 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
