@@ -25,11 +25,11 @@ export default function MobileTetrisGame({
   const [pressedKey, setPressedKey] = useState(null);
   const pressTimer = useRef(null);
   const lastPressTime = useRef(0);
-  const COOLDOWN = 100; // ms
+  const COOLDOWN = 200; // ms
   const flashPress = (key) => {
     if (pressTimer.current) clearTimeout(pressTimer.current);
     setPressedKey(key);
-    pressTimer.current = setTimeout(() => setPressedKey(null), 0);
+    pressTimer.current = setTimeout(() => setPressedKey(null), 200);
   };
   const withCooldown = (fn) => () => {
     const now = Date.now();
