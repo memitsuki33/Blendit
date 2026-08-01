@@ -21,13 +21,21 @@ export default function MobileSinglePlayerGame({
   const [showColorGuide, setShowColorGuide] = useState(true);
   const [showSettings, setShowSettings] = useState(false);
 
-  // 0.1 s visual press feedback
+  // 0.1 s visual press feedback + cooldown
   const [pressedKey, setPressedKey] = useState(null);
   const pressTimer = useRef(null);
+  const lastPressTime = useRef(0);
+  const COOLDOWN = 100; // ms
   const flashPress = (key) => {
     if (pressTimer.current) clearTimeout(pressTimer.current);
     setPressedKey(key);
     pressTimer.current = setTimeout(() => setPressedKey(null), 200);
+  };
+  const withCooldown = (fn) => () => {
+    const now = Date.now();
+    if (now - lastPressTime.current < COOLDOWN) return;
+    lastPressTime.current = now;
+    fn();
   };
 
   // Persist max level reached for level-jump unlocks
@@ -54,12 +62,12 @@ export default function MobileSinglePlayerGame({
   const holdUsed = state.holdUsed ?? false;
   const blocked = state.gameOver || showColorGuide || showSettings;
 
-  // Game actions — fire immediately, visual flash runs in parallel
-  const handleLeft     = () => { if (blocked) return; flashPress('left');  playMove();     moveLeft(); };
-  const handleRight    = () => { if (blocked) return; flashPress('right'); playMove();     moveRight(); };
-  const handleSoftDrop = () => { if (blocked) return; flashPress('soft');  playSoftDrop(); softDrop(); };
-  const handleHardDrop = () => { if (blocked) return; flashPress('hard');  playHardDrop(); hardDrop(); };
-  const handleHold     = () => { if (blocked) return; flashPress('hold');  playHold();     hold(); };
+  // Game actions — fire immediately, visual flash runs in parallel; 0.1 s cooldown prevents rapid re-fire
+  const handleLeft     = withCooldown(() => { if (blocked) return; flashPress('left');  playMove();     moveLeft(); });
+  const handleRight    = withCooldown(() => { if (blocked) return; flashPress('right'); playMove();     moveRight(); });
+  const handleSoftDrop = withCooldown(() => { if (blocked) return; flashPress('soft');  playSoftDrop(); softDrop(); });
+  const handleHardDrop = withCooldown(() => { if (blocked) return; flashPress('hard');  playHardDrop(); hardDrop(); });
+  const handleHold     = withCooldown(() => { if (blocked) return; flashPress('hold');  playHold();     hold(); });
 
   const handleRestart = () => { restart(0); setShowColorGuide(true); };
 
