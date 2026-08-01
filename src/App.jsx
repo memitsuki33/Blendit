@@ -70,6 +70,7 @@ export default function App() {
     return (
       <DashboardScreen
         onSinglePlayer={(cfg) => { setGameConfig(cfg); setScreen('game-dashboard'); }}
+        onMobileSinglePlayer={(cfg) => { setGameConfig(cfg); setScreen('mobile-single'); }}
         onTetris={(cfg) => { setGameConfig(cfg); setScreen('tetris'); }}
         onPvP={() => setScreen('battle-select')}
         onLogOut={() => setScreen('landing')}
