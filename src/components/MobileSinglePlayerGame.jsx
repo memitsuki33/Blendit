@@ -29,7 +29,7 @@ export default function MobileSinglePlayerGame({
   const flashPress = (key) => {
     if (pressTimer.current) clearTimeout(pressTimer.current);
     setPressedKey(key);
-    pressTimer.current = setTimeout(() => setPressedKey(null), 200);
+    pressTimer.current = setTimeout(() => setPressedKey(null), 0);
   };
   const withCooldown = (fn) => () => {
     const now = Date.now();
