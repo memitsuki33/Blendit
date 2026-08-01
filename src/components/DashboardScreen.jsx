@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import SettingsModal from './SettingsModal.jsx';
 import ColorSequenceModal from './ColorSequenceModal.jsx';
+import ShopModal from './ShopModal.jsx';
 import { levelThreshold, MAX_LEVEL } from '../utils/constants.js';
 
 const NAV_ITEMS = ['HOME', 'LEVELS', 'RANKS', 'TROPHIES', 'CHATS', 'SETTINGS', 'USER DATA', 'LOG OUT'];
@@ -24,6 +25,24 @@ export default function DashboardScreen({
   const [panel, setPanel] = useState('home');
   const [showSettings, setShowSettings] = useState(false);
   const [showColors, setShowColors] = useState(false);
+  const [showShop, setShowShop] = useState(false);
+
+  // Coins & purchased slots — persisted in localStorage
+  const [coins] = useState(() =>
+    parseInt(localStorage.getItem('blendIt_coins') || '0', 10)
+  );
+  const [purchased, setPurchased] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('blendIt_purchased') || '[]'); }
+    catch { return []; }
+  });
+
+  function handleBuy(slot, price) {
+    if (coins < price || purchased.includes(slot)) return;
+    // coins spending would be wired to real currency later; for now just unlock
+    const next = [...purchased, slot];
+    setPurchased(next);
+    localStorage.setItem('blendIt_purchased', JSON.stringify(next));
+  }
 
   const maxUnlocked = parseInt(
     typeof localStorage !== 'undefined'
@@ -150,7 +169,7 @@ export default function DashboardScreen({
               <button className="dash-btn dash-btn-purple">Dailies</button>
             </div>
             <div className="dashboard-row">
-              <button className="dash-btn dash-btn-green">Shop</button>
+              <button className="dash-btn dash-btn-green" onClick={() => setShowShop(true)}>Shop</button>
               <button className="dash-btn dash-btn-teal">Quest</button>
             </div>
           </div>
@@ -200,7 +219,7 @@ export default function DashboardScreen({
               <button className="dash-btn dash-btn-blue db-mobile-btn" onClick={onPvP}>
                 PvP
               </button>
-              <button className="dash-btn dash-btn-green db-mobile-btn">
+              <button className="dash-btn dash-btn-green db-mobile-btn" onClick={() => setShowShop(true)}>
                 Shop
               </button>
               <button className="dash-btn dash-btn-pink db-mobile-btn">
@@ -304,6 +323,14 @@ export default function DashboardScreen({
       )}
       {showColors && (
         <ColorSequenceModal onClose={() => setShowColors(false)} actionLabel="Got it!" />
+      )}
+      {showShop && (
+        <ShopModal
+          coins={coins}
+          purchased={purchased}
+          onBuy={handleBuy}
+          onClose={() => setShowShop(false)}
+        />
       )}
     </div>
   );
