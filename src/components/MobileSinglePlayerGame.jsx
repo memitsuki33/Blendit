@@ -27,7 +27,7 @@ export default function MobileSinglePlayerGame({
   const flashPress = (key) => {
     if (pressTimer.current) clearTimeout(pressTimer.current);
     setPressedKey(key);
-    pressTimer.current = setTimeout(() => setPressedKey(null), 100);
+    pressTimer.current = setTimeout(() => setPressedKey(null), 200);
   };
 
   // Persist max level reached for level-jump unlocks

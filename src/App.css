@@ -2877,8 +2877,8 @@ kbd {
   -webkit-tap-highlight-color: transparent;
   /* resting 3-D shadow */
   box-shadow: 0 4px 0 #060d1a, inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  /* 0.1 s press animation */
-  transition: box-shadow 0.1s ease, top 0.1s ease, background 0.1s ease;
+  /* 0.2 s press animation */
+  transition: box-shadow 0.2s ease, top 0.2s ease, background 0.2s ease;
   position: relative;
   top: 0;
   user-select: none;
