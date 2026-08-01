@@ -26,6 +26,22 @@ export default function SinglePlayerGame({
   const [showColorGuide, setShowColorGuide] = useState(true);
   const [showSettings, setShowSettings] = useState(false);
   const touchStartRef = useRef(null);
+  const repeatRef = useRef(null);
+
+  // Fire an action immediately, then repeat every 100 ms while finger is held
+  const startRepeat = useCallback((fn) => {
+    fn();
+    clearInterval(repeatRef.current);
+    repeatRef.current = setInterval(fn, 100);
+  }, []);
+
+  const stopRepeat = useCallback(() => {
+    clearInterval(repeatRef.current);
+    repeatRef.current = null;
+  }, []);
+
+  // Clean up on unmount
+  useEffect(() => () => clearInterval(repeatRef.current), []);
 
   // Persist max level reached
   useEffect(() => {
@@ -196,21 +212,52 @@ export default function SinglePlayerGame({
           </div>
         </div>
 
-        {/* Bottom bar */}
+        {/* Bottom control bar */}
         <div className="mg-bar">
+          {/* HOLD */}
           <button
-            className="mg-hold-btn"
-            onTouchStart={(e) => { e.stopPropagation(); playHold(); hold(); }}
+            className="mg-ctrl-btn mg-ctrl-hold"
+            onTouchStart={(e) => { e.preventDefault(); playHold(); hold(); }}
+            onTouchEnd={stopRepeat}
           >HOLD</button>
-          {/* held color square */}
-          <div className="mg-color-sq" style={{
-            background: heldColor ? heldColor.bg : '#0d1b2e',
-            opacity: holdUsed ? 0.4 : 1,
-          }} />
-          {/* next piece square */}
-          <div className="mg-color-sq" style={{ background: nextColor.bg }} />
-          {/* 3 dark filler squares */}
-          {[0,1,2].map(i => <div key={i} className="mg-color-sq" />)}
+
+          {/* ← Move left */}
+          <button
+            className="mg-ctrl-btn"
+            onTouchStart={(e) => { e.preventDefault(); startRepeat(() => { playMove(); moveLeft(); }); }}
+            onTouchEnd={stopRepeat}
+            onTouchCancel={stopRepeat}
+          >◀</button>
+
+          {/* ↺ Rotate */}
+          <button
+            className="mg-ctrl-btn"
+            onTouchStart={(e) => { e.preventDefault(); playMove(); hardDrop(); }}
+            onTouchEnd={stopRepeat}
+          >▲</button>
+
+          {/* ↓ Soft drop */}
+          <button
+            className="mg-ctrl-btn"
+            onTouchStart={(e) => { e.preventDefault(); startRepeat(() => { playSoftDrop(); softDrop(); }); }}
+            onTouchEnd={stopRepeat}
+            onTouchCancel={stopRepeat}
+          >▼</button>
+
+          {/* → Move right */}
+          <button
+            className="mg-ctrl-btn"
+            onTouchStart={(e) => { e.preventDefault(); startRepeat(() => { playMove(); moveRight(); }); }}
+            onTouchEnd={stopRepeat}
+            onTouchCancel={stopRepeat}
+          >▶</button>
+
+          {/* ⬇ Hard drop */}
+          <button
+            className="mg-ctrl-btn mg-ctrl-drop"
+            onTouchStart={(e) => { e.preventDefault(); playHardDrop(); hardDrop(); }}
+            onTouchEnd={stopRepeat}
+          >⬇</button>
         </div>
 
         {/* Game over overlay */}

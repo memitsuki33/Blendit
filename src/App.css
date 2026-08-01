@@ -2568,6 +2568,44 @@ kbd {
     transition: opacity 0.15s;
   }
 
+  /* ── Touch control buttons (Normal mode bottom bar) ── */
+  .mg-ctrl-btn {
+    flex: 1;
+    min-width: 0;
+    height: 50px;
+    background: #0d1b2e;
+    border: 1px solid #1e3a5f;
+    border-radius: 8px;
+    color: #e2e8f0;
+    font-size: 1rem;
+    font-family: inherit;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
+    transition: background 0.08s, transform 0.08s;
+  }
+  .mg-ctrl-btn:active {
+    background: #1a3060;
+    transform: scale(0.92);
+  }
+
+  .mg-ctrl-hold {
+    font-size: 0.42rem !important;
+    font-weight: 900 !important;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    flex: 1.2 !important;
+  }
+
+  .mg-ctrl-drop {
+    color: #f59e0b;
+  }
+
   /* ── Game over / pause overlay ── */
   .mg-gameover {
     position: absolute;
