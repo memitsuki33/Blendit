@@ -15,7 +15,7 @@ function fmtScore(n) {
 }
 
 export default function DashboardScreen({
-  onSinglePlayer, onMobileSinglePlayer, onTetris, onPvP, onLogOut,
+  onSinglePlayer, onMobileSinglePlayer, onTetris, onMobileTetris, onPvP, onLogOut,
   animSpeed, onAnimSpeed,
   soundEnabled, onSoundEnabled,
   musicEnabled, onMusicEnabled,
@@ -225,7 +225,7 @@ export default function DashboardScreen({
           <div className="db-mobile-sub db-mobile-list">
             <button className="nm-back-btn db-mobile-back" onClick={() => setPanel('single-player')}>← Back</button>
             <h2 className="nm-title" style={{ textAlign: 'center', marginBottom: 8 }}>Tetris Mode</h2>
-            <button className="dash-btn dash-btn-blue db-mobile-btn" onClick={() => onTetris({ level: 1, startScore: 0 })}>
+            <button className="dash-btn dash-btn-blue db-mobile-btn" onClick={() => onMobileTetris({ level: 1, startScore: 0 })}>
               Start at Level 1
             </button>
             {JUMP_LEVELS.map(lv => {
@@ -235,7 +235,7 @@ export default function DashboardScreen({
                 <button
                   key={lv}
                   className={`nm-level-row db-mobile-level${locked ? ' nm-level-locked' : ''}`}
-                  onClick={locked ? undefined : () => onTetris({ level: lv, startScore: Math.floor(pts * 0.95) })}
+                  onClick={locked ? undefined : () => onMobileTetris({ level: lv, startScore: Math.floor(pts * 0.95) })}
                   disabled={locked}
                 >
                   <span className="nm-lv-label">Lv {lv}</span>
