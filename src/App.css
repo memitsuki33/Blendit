@@ -379,6 +379,10 @@ body {
   opacity: 0.35;
   pointer-events: none;
   z-index: 0;
+  transition: opacity 0.3s ease;
+}
+.dashboard-bg--pvp {
+  opacity: 0.4;
 }
 
 /* Left player card — exact same size as the real game board */
@@ -648,14 +652,14 @@ body {
 }
 
 .dash-btn-ghost {
-  background: #1e293b;
-  color: var(--text-dim);
-  border: 1.5px solid #334155;
-  box-shadow: 0 2px 0 #0f172a;
+  background: #374151;
+  color: var(--text);
+  border: 1.5px solid #4b5563;
+  box-shadow: 0 4px 0 #1f2937;
   font-size: 0.8rem;
   min-width: 180px;
 }
-.dash-btn-ghost:hover { color: var(--text); }
+.dash-btn-ghost:hover { filter: brightness(1.15); }
 
 /* ── Normal Mode panel ── */
 .nm-header {
@@ -1160,10 +1164,10 @@ body {
 }
 
 .btn-ghost {
-  background: var(--panel-bg);
+  background: #374151;
   color: var(--text);
-  border: 1px solid var(--border);
-  box-shadow: 0 2px 0 #0f172a;
+  border: 1px solid #4b5563;
+  box-shadow: 0 4px 0 #1f2937;
 }
 
 .btn-danger {

@@ -143,10 +143,27 @@ export default function DashboardScreen({
     );
   }
 
+  function renderPvpPanel() {
+    return (
+      <div className="dashboard-center dashboard-sub-center">
+        <h2 className="dashboard-sub-title">Player vs Player</h2>
+        <button className="dash-btn dash-btn-orange" onClick={onPvP}>
+          Online Mode
+        </button>
+        <button className="dash-btn dash-btn-blue" onClick={onPvP}>
+          2 Player Mode
+        </button>
+        <button className="dash-btn dash-btn-ghost" onClick={() => setPanel('home')}>
+          Back
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="dashboard">
       {/* Background */}
-      <div className="dashboard-bg" />
+      <div className={`dashboard-bg${panel === 'pvp' ? ' dashboard-bg--pvp' : ''}`} />
 
       {/* ════════════════════════════════════════
           DESKTOP layout (hidden on mobile)
@@ -165,7 +182,7 @@ export default function DashboardScreen({
               <button className="dash-btn dash-btn-pink">Friends</button>
             </div>
             <div className="dashboard-row">
-              <button className="dash-btn dash-btn-blue" onClick={onPvP}>PvP</button>
+              <button className="dash-btn dash-btn-blue" onClick={() => setPanel('pvp')}>PvP</button>
               <button className="dash-btn dash-btn-purple">Dailies</button>
             </div>
             <div className="dashboard-row">
@@ -177,6 +194,7 @@ export default function DashboardScreen({
         {panel === 'single-player' && renderSinglePlayerPanel()}
         {panel === 'tetris-mode'   && renderTetrisPanel()}
         {panel === 'normal-mode'   && renderNormalPanel()}
+        {panel === 'pvp'           && renderPvpPanel()}
 
         {/* Right nav sidebar */}
         <nav className="dashboard-nav">
@@ -216,7 +234,7 @@ export default function DashboardScreen({
               <button className="dash-btn dash-btn-orange db-mobile-btn" onClick={() => setPanel('single-player')}>
                 Single Player
               </button>
-              <button className="dash-btn dash-btn-blue db-mobile-btn" onClick={onPvP}>
+              <button className="dash-btn dash-btn-blue db-mobile-btn" onClick={() => setPanel('pvp')}>
                 PvP
               </button>
               <button className="dash-btn dash-btn-green db-mobile-btn" onClick={() => setShowShop(true)}>
