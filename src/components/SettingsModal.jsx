@@ -6,8 +6,8 @@ const CTRL_INFO = {
     tetris:  ['◀ ▶ — move left / right', '▼ — soft drop', '⬤ — hard drop (yellow btn)', '↻ — rotate', 'HOLD — save piece'],
   },
   swipe: {
-    normal:  ['← → swipe — move', '↓ swipe — hard drop', '✋ tap — hold piece'],
-    tetris:  ['← → swipe — move', '↓ swipe — hard drop', '↑ swipe — rotate', '✋ tap — hold piece'],
+    normal:  ['← → swipe — move', '↓ swipe — hard drop', '↑ swipe — hold piece'],
+    tetris:  ['← → swipe — move', '↓ swipe — hard drop', '↑ swipe — hold piece', '✋ tap — rotate'],
   },
 };
 

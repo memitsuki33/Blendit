@@ -21,13 +21,13 @@ const INSTRUCTIONS = {
     normal: [
       { icon: '← →', text: 'Swipe left / right — move piece' },
       { icon: '↓',   text: 'Swipe down — hard drop (instant)' },
-      { icon: '✋',   text: 'Tap the board — hold piece' },
+      { icon: '↑',   text: 'Swipe up — hold piece' },
     ],
     tetris: [
       { icon: '← →', text: 'Swipe left / right — move piece' },
       { icon: '↓',   text: 'Swipe down — hard drop (instant)' },
-      { icon: '↑',   text: 'Swipe up — rotate piece' },
-      { icon: '✋',   text: 'Tap the board — hold piece' },
+      { icon: '↑',   text: 'Swipe up — hold piece' },
+      { icon: '✋',   text: 'Tap the board — rotate piece' },
     ],
   },
 };

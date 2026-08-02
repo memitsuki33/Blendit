@@ -81,14 +81,14 @@ export default function MobileSinglePlayerGame({
   // Swipe controls — normal mode
   //   ← → swipe  = move
   //   ↓  swipe   = hard drop
-  //   ↑  swipe   = (no rotate in normal mode — unused)
-  //   tap        = hold
+  //   ↑  swipe   = hold
+  //   tap        = (no rotate in normal mode — unused)
   const swipeHandlers = useSwipeControls({
     enabled: controlMode === 'swipe' && !blocked,
     onLeft:  handleLeft,
     onRight: handleRight,
     onDown:  handleHardDrop,
-    onTap:   handleHold,
+    onUp:    handleHold,
   });
 
   const ctrlClass = (key, extra = '') =>
@@ -115,7 +115,7 @@ export default function MobileSinglePlayerGame({
       >
         <GameBoard state={state} animSpeed={animSpeed} />
         {controlMode === 'swipe' && !state.gameOver && !showColorGuide && !showSettings && (
-          <div className="swipe-hint">← → move · ↓ hard drop · tap hold</div>
+          <div className="swipe-hint">← → move · ↓ drop · ↑ hold</div>
         )}
       </div>
 
