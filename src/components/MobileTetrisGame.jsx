@@ -127,7 +127,6 @@ export default function MobileTetrisGame({
 
         <button
           className="msp-info-btn"
-          onTouchStart={touch(() => setShowSettings(true))}
           onClick={() => setShowSettings(true)}
         >
           SETTINGS
@@ -135,7 +134,6 @@ export default function MobileTetrisGame({
 
         <button
           className="msp-info-btn msp-info-btn-pill"
-          onTouchStart={touch(onBack)}
           onClick={onBack}
         >
           MENU
