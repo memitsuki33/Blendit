@@ -78,13 +78,16 @@ export default function MobileSinglePlayerGame({
   const handleHold     = () => { if (blocked) return; flashPress('hold');  playHold();     hold(); };
   const handleRestart  = () => { restart(0); setShowColorGuide(true); };
 
-  // Swipe controls (normal mode: tap = hold)
+  // Swipe controls — normal mode
+  //   ← → swipe  = move
+  //   ↓  swipe   = hard drop
+  //   ↑  swipe   = (no rotate in normal mode — unused)
+  //   tap        = hold
   const swipeHandlers = useSwipeControls({
     enabled: controlMode === 'swipe' && !blocked,
     onLeft:  handleLeft,
     onRight: handleRight,
-    onDown:  handleSoftDrop,
-    onUp:    handleHardDrop,
+    onDown:  handleHardDrop,
     onTap:   handleHold,
   });
 
@@ -112,7 +115,7 @@ export default function MobileSinglePlayerGame({
       >
         <GameBoard state={state} animSpeed={animSpeed} />
         {controlMode === 'swipe' && !state.gameOver && !showColorGuide && !showSettings && (
-          <div className="swipe-hint">swipe to play • tap = hold</div>
+          <div className="swipe-hint">← → move · ↓ hard drop · tap hold</div>
         )}
       </div>
 
@@ -195,6 +198,7 @@ export default function MobileSinglePlayerGame({
           soundEnabled={soundEnabled} onSoundEnabled={onSoundEnabled}
           musicEnabled={musicEnabled} onMusicEnabled={onMusicEnabled}
           controlMode={controlMode}   onControlMode={handleControlModeChange}
+          gameType="normal"
           onReset={handleRestart}
         />
       )}

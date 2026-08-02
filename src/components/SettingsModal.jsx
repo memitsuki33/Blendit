@@ -1,4 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
+
+const CTRL_INFO = {
+  button: {
+    normal:  ['◀ ▶ — move left / right', '▼ — soft drop', '⬤ — hard drop (yellow btn)', 'HOLD — save piece'],
+    tetris:  ['◀ ▶ — move left / right', '▼ — soft drop', '⬤ — hard drop (yellow btn)', '↻ — rotate', 'HOLD — save piece'],
+  },
+  swipe: {
+    normal:  ['← → swipe — move', '↓ swipe — hard drop', '✋ tap — hold piece'],
+    tetris:  ['← → swipe — move', '↓ swipe — hard drop', '↑ swipe — rotate', '✋ tap — hold piece'],
+  },
+};
 
 /**
  * Shared settings modal.
@@ -25,10 +36,12 @@ export default function SettingsModal({
   onMusicEnabled,
   controlMode,
   onControlMode,
+  gameType = 'normal',
   onReset,
   checkpointLevel,
   onLoadLevel,
 }) {
+  const [showInfo, setShowInfo] = useState(null); // null | 'button' | 'swipe'
   const hasGameControls = onReset || onLoadLevel;
 
   return (
@@ -98,20 +111,44 @@ export default function SettingsModal({
 
           {/* Mobile controls toggle — only shown when prop is provided */}
           {onControlMode && (
-            <div className="modal-row">
-              <span className="modal-label">Controls</span>
-              <div className="settings-options">
-                {['button', 'swipe'].map(opt => (
-                  <button
-                    key={opt}
-                    className={`settings-opt${controlMode === opt ? ' active' : ''}`}
-                    onClick={() => onControlMode(opt)}
-                  >
-                    {opt === 'button' ? '🎮 Buttons' : '👆 Swipe'}
-                  </button>
-                ))}
+            <>
+              <div className="modal-row">
+                <span className="modal-label">Controls</span>
+                <div className="settings-options">
+                  {['button', 'swipe'].map(opt => (
+                    <div key={opt} className="settings-opt-group">
+                      <button
+                        className={`settings-opt${controlMode === opt ? ' active' : ''}`}
+                        onClick={() => onControlMode(opt)}
+                      >
+                        {opt === 'button' ? '🎮 Buttons' : '👆 Swipe'}
+                      </button>
+                      <button
+                        className={`settings-info-btn${showInfo === opt ? ' open' : ''}`}
+                        onClick={() => setShowInfo(showInfo === opt ? null : opt)}
+                        aria-label={`Info for ${opt} mode`}
+                      >
+                        ℹ
+                      </button>
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
+
+              {/* Inline instructions for the selected info panel */}
+              {showInfo && (
+                <div className="settings-ctrl-info">
+                  <span className="settings-ctrl-info-title">
+                    {showInfo === 'button' ? '🎮 Button Mode' : '👆 Swipe Mode'}
+                  </span>
+                  <ul className="settings-ctrl-info-list">
+                    {(CTRL_INFO[showInfo]?.[gameType] ?? CTRL_INFO[showInfo].normal).map((line, i) => (
+                      <li key={i}>{line}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </>
           )}
 
           {/* In-game: Reset / Load Level */}

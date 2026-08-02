@@ -64,14 +64,18 @@ export default function MobileTetrisGame({
   const handleHold   = () => { if (blocked) return; flashPress('hold');   playHold();     hold(); };
   const handleRestart = () => restart(startLevel);
 
-  // Swipe controls (tetris: tap = rotate)
+  // Swipe controls — tetris mode
+  //   ← → swipe  = move
+  //   ↓  swipe   = hard drop
+  //   ↑  swipe   = rotate
+  //   tap        = hold
   const swipeHandlers = useSwipeControls({
     enabled: controlMode === 'swipe' && !blocked,
     onLeft:  handleLeft,
     onRight: handleRight,
-    onDown:  handleSoft,
-    onUp:    handleHard,
-    onTap:   handleRotate,
+    onDown:  handleHard,
+    onUp:    handleRotate,
+    onTap:   handleHold,
   });
 
   const ctrlClass = (key, extra = '') =>
@@ -99,7 +103,7 @@ export default function MobileTetrisGame({
       >
         <TetrisBoard state={state} animSpeed={animSpeed} />
         {controlMode === 'swipe' && !state.gameOver && !showSettings && (
-          <div className="swipe-hint">swipe to play • tap = rotate</div>
+          <div className="swipe-hint">← → move · ↓ drop · ↑ rotate · tap hold</div>
         )}
       </div>
 
@@ -183,6 +187,7 @@ export default function MobileTetrisGame({
           soundEnabled={soundEnabled} onSoundEnabled={onSoundEnabled}
           musicEnabled={musicEnabled} onMusicEnabled={onMusicEnabled}
           controlMode={controlMode}   onControlMode={handleControlModeChange}
+          gameType="tetris"
           onReset={handleRestart}
         />
       )}
