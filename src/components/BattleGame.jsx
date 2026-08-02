@@ -162,7 +162,8 @@ export default function BattleGame({
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, position: 'relative' }}>
+      <div className="dashboard-bg dashboard-bg--pvp" />
       {/* Back button pinned to top-left corner */}
       <button
         className="btn btn-ghost btn-sm"
