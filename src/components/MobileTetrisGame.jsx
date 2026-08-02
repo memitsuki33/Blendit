@@ -22,7 +22,7 @@ export default function MobileTetrisGame({
   const [showSettings, setShowSettings] = useState(false);
 
   const { state, moveLeft, moveRight, softDrop, hardDrop, rotate, hold, restart } =
-    useTetrisEngine({ startLevel, startScore, paused: showSettings || showPreGame, gravity: true });
+    useTetrisEngine({ startLevel, startScore, paused: showSettings || showPreGame, gravity: false });
 
   // Visual press feedback (button mode)
   const [pressedKey, setPressedKey] = useState(null);
