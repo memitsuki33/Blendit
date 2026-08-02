@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useGameEngine } from '../hooks/useGameEngine.js';
+import { useSwipeControls } from '../hooks/useSwipeControls.js';
 import GameBoard from './GameBoard.jsx';
 import ColorSequenceModal from './ColorSequenceModal.jsx';
 import SettingsModal from './SettingsModal.jsx';
+import MobilePreGameModal from './MobilePreGameModal.jsx';
 import { getTileColor, formatScore } from '../utils/colors.js';
 import { playMove, playHardDrop, playSoftDrop, playHold, playTimedGarbage } from '../utils/soundEffects.js';
 
@@ -18,10 +20,14 @@ export default function MobileSinglePlayerGame({
     mode: 'single',
   });
 
-  const [showColorGuide, setShowColorGuide] = useState(true);
-  const [showSettings, setShowSettings] = useState(false);
+  const [showPreGame,   setShowPreGame]   = useState(true);
+  const [controlMode,   setControlMode]   = useState(
+    () => localStorage.getItem('blendIt_controlMode') || 'button'
+  );
+  const [showColorGuide, setShowColorGuide] = useState(false); // shown AFTER pre-game
+  const [showSettings,   setShowSettings]   = useState(false);
 
-  // Visual press feedback
+  // Visual press feedback (button mode)
   const [pressedKey, setPressedKey] = useState(null);
   const pressTimer = useRef(null);
   const flashPress = (key) => {
@@ -30,8 +36,7 @@ export default function MobileSinglePlayerGame({
     pressTimer.current = setTimeout(() => setPressedKey(null), 100);
   };
 
-  // Per-button 100 ms cooldown. tap() is used on onPointerDown only — no onClick
-  // on game buttons, so each physical press can only fire once.
+  // Per-button 100 ms cooldown — onPointerDown only, no onClick on game buttons
   const cooldownMap = useRef({});
   const tap = (key, fn) => (e) => {
     e.preventDefault();
@@ -62,29 +67,56 @@ export default function MobileSinglePlayerGame({
 
   const nextColor = getTileColor(state.nextPieceValue);
   const heldColor = state.heldValue ? getTileColor(state.heldValue) : null;
-  const holdUsed = state.holdUsed ?? false;
-  const blocked = state.gameOver || showColorGuide || showSettings;
+  const holdUsed  = state.holdUsed ?? false;
+  const blocked   = state.gameOver || showColorGuide || showSettings || showPreGame;
 
+  // Game actions
   const handleLeft     = () => { if (blocked) return; flashPress('left');  playMove();     moveLeft(); };
   const handleRight    = () => { if (blocked) return; flashPress('right'); playMove();     moveRight(); };
   const handleSoftDrop = () => { if (blocked) return; flashPress('soft');  playSoftDrop(); softDrop(); };
   const handleHardDrop = () => { if (blocked) return; flashPress('hard');  playHardDrop(); hardDrop(); };
   const handleHold     = () => { if (blocked) return; flashPress('hold');  playHold();     hold(); };
+  const handleRestart  = () => { restart(0); setShowColorGuide(true); };
 
-  const handleRestart = () => { restart(0); setShowColorGuide(true); };
+  // Swipe controls (normal mode: tap = hold)
+  const swipeHandlers = useSwipeControls({
+    enabled: controlMode === 'swipe' && !blocked,
+    onLeft:  handleLeft,
+    onRight: handleRight,
+    onDown:  handleSoftDrop,
+    onUp:    handleHardDrop,
+    onTap:   handleHold,
+  });
 
   const ctrlClass = (key, extra = '') =>
     `msp-ctrl-btn${pressedKey === key ? ' msp-ctrl-pressed' : ''}${extra ? ' ' + extra : ''}`;
 
-  return (
-    <div className="msp-root">
+  function handlePreGameReady(chosenMode) {
+    setControlMode(chosenMode);
+    setShowPreGame(false);
+    setShowColorGuide(true); // show color guide after control selection
+  }
 
-      {/* ── Board — full width, takes all remaining height ── */}
-      <div className="msp-board-area">
+  function handleControlModeChange(newMode) {
+    setControlMode(newMode);
+    localStorage.setItem('blendIt_controlMode', newMode);
+  }
+
+  return (
+    <div className={`msp-root${controlMode === 'swipe' ? ' msp-swipe-mode' : ''}`}>
+
+      {/* ── Board ── */}
+      <div
+        className={`msp-board-area${controlMode === 'swipe' ? ' msp-board-swipe' : ''}`}
+        {...(controlMode === 'swipe' ? swipeHandlers : {})}
+      >
         <GameBoard state={state} animSpeed={animSpeed} />
+        {controlMode === 'swipe' && !state.gameOver && !showColorGuide && !showSettings && (
+          <div className="swipe-hint">swipe to play • tap = hold</div>
+        )}
       </div>
 
-      {/* ── NEXT row — 5 tiles horizontal ── */}
+      {/* ── NEXT row ── */}
       <div className="msp-next-row">
         {[0, 1, 2, 3, 4].map((i) => (
           <div key={i} className="msp-next-slot">
@@ -98,18 +130,16 @@ export default function MobileSinglePlayerGame({
         ))}
       </div>
 
-      {/* ── Info row: score | level | hold display | settings | menu ── */}
+      {/* ── Info row ── */}
       <div className="msp-info-row">
         <div className="msp-info-chip">
           <span className="msp-chip-label">SCORE</span>
           <span className="msp-chip-val">{formatScore(state.score)}</span>
         </div>
-
         <div className="msp-info-chip">
           <span className="msp-chip-label">LEVEL</span>
           <span className="msp-chip-val msp-chip-val-red">{state.level}</span>
         </div>
-
         <div className="msp-info-chip">
           <span className="msp-chip-label">HOLD</span>
           <div
@@ -121,38 +151,38 @@ export default function MobileSinglePlayerGame({
             }}
           />
         </div>
-
-        <button
-          className="msp-info-btn"
-          onClick={() => setShowSettings(true)}
-        >
-          SETTINGS
-        </button>
-
-        <button
-          className="msp-info-btn msp-info-btn-pill"
-          onClick={onBack}
-        >
-          MENU
-        </button>
+        <button className="msp-info-btn" onClick={() => setShowSettings(true)}>SETTINGS</button>
+        <button className="msp-info-btn msp-info-btn-pill" onClick={onBack}>MENU</button>
       </div>
 
-      {/* ── Bottom touch controls ── */}
-      <div className="msp-controls">
-        {state.gameOver ? (
-          <button className="btn btn-primary msp-restart-btn" onClick={handleRestart}>
-            Restart
-          </button>
-        ) : (
-          <>
-            <button className={ctrlClass('hold')}  onPointerDown={tap('hold', handleHold)}>HOLD</button>
-            <button className={ctrlClass('hard', 'msp-ctrl-hard')} onPointerDown={tap('hard', handleHardDrop)} />
-            <button className={ctrlClass('left')}  onPointerDown={tap('left', handleLeft)}>◀</button>
-            <button className={ctrlClass('soft')}  onPointerDown={tap('soft', handleSoftDrop)}>▼</button>
-            <button className={ctrlClass('right')} onPointerDown={tap('right', handleRight)}>▶</button>
-          </>
-        )}
-      </div>
+      {/* ── Button controls (hidden in swipe mode) ── */}
+      {controlMode === 'button' && (
+        <div className="msp-controls">
+          {state.gameOver ? (
+            <button className="btn btn-primary msp-restart-btn" onClick={handleRestart}>Restart</button>
+          ) : (
+            <>
+              <button className={ctrlClass('hold')}  onPointerDown={tap('hold', handleHold)}>HOLD</button>
+              <button className={ctrlClass('hard', 'msp-ctrl-hard')} onPointerDown={tap('hard', handleHardDrop)} />
+              <button className={ctrlClass('left')}  onPointerDown={tap('left', handleLeft)}>◀</button>
+              <button className={ctrlClass('soft')}  onPointerDown={tap('soft', handleSoftDrop)}>▼</button>
+              <button className={ctrlClass('right')} onPointerDown={tap('right', handleRight)}>▶</button>
+            </>
+          )}
+        </div>
+      )}
+
+      {/* Swipe mode game-over restart */}
+      {controlMode === 'swipe' && state.gameOver && (
+        <div className="msp-controls">
+          <button className="btn btn-primary msp-restart-btn" onClick={handleRestart}>Restart</button>
+        </div>
+      )}
+
+      {/* ── Modals ── */}
+      {showPreGame && (
+        <MobilePreGameModal gameType="normal" onReady={handlePreGameReady} />
+      )}
 
       {showColorGuide && (
         <ColorSequenceModal onClose={() => setShowColorGuide(false)} actionLabel="Play!" />
@@ -161,12 +191,10 @@ export default function MobileSinglePlayerGame({
       {showSettings && (
         <SettingsModal
           onClose={() => setShowSettings(false)}
-          animSpeed={animSpeed}
-          onAnimSpeed={onAnimSpeed}
-          soundEnabled={soundEnabled}
-          onSoundEnabled={onSoundEnabled}
-          musicEnabled={musicEnabled}
-          onMusicEnabled={onMusicEnabled}
+          animSpeed={animSpeed}     onAnimSpeed={onAnimSpeed}
+          soundEnabled={soundEnabled} onSoundEnabled={onSoundEnabled}
+          musicEnabled={musicEnabled} onMusicEnabled={onMusicEnabled}
+          controlMode={controlMode}   onControlMode={handleControlModeChange}
           onReset={handleRestart}
         />
       )}

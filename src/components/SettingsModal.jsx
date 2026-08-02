@@ -23,6 +23,8 @@ export default function SettingsModal({
   onSoundEnabled,
   musicEnabled,
   onMusicEnabled,
+  controlMode,
+  onControlMode,
   onReset,
   checkpointLevel,
   onLoadLevel,
@@ -93,6 +95,24 @@ export default function SettingsModal({
               </button>
             </div>
           </div>
+
+          {/* Mobile controls toggle — only shown when prop is provided */}
+          {onControlMode && (
+            <div className="modal-row">
+              <span className="modal-label">Controls</span>
+              <div className="settings-options">
+                {['button', 'swipe'].map(opt => (
+                  <button
+                    key={opt}
+                    className={`settings-opt${controlMode === opt ? ' active' : ''}`}
+                    onClick={() => onControlMode(opt)}
+                  >
+                    {opt === 'button' ? '🎮 Buttons' : '👆 Swipe'}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* In-game: Reset / Load Level */}
           {hasGameControls && (

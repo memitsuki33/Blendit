@@ -2925,6 +2925,197 @@ kbd {
   transition: opacity 0.15s;
 }
 
+/* ===== PRE-GAME CONTROL MODAL ===== */
+.pregame-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.82);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 300;
+  animation: fadeIn 0.15s ease;
+}
+
+.pregame-card {
+  background: var(--panel-bg);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  width: min(340px, calc(100vw - 32px));
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.75);
+  overflow: hidden;
+  animation: fadeIn 0.18s ease;
+}
+
+.pregame-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+}
+
+.pregame-title {
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text);
+}
+
+.pregame-mode-badge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--accent2);
+  letter-spacing: 0.5px;
+}
+
+.pregame-body {
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ── Mode selection cards ── */
+.pregame-mode-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.pregame-mode-opt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 14px 8px;
+  border-radius: 10px;
+  border: 2px solid var(--border);
+  background: var(--bg);
+  cursor: pointer;
+  transition: border-color 0.12s, background 0.12s;
+  font-family: inherit;
+}
+
+.pregame-mode-opt:hover {
+  border-color: var(--accent2);
+}
+
+.pregame-mode-opt.selected {
+  border-color: var(--accent2);
+  background: color-mix(in srgb, var(--accent2) 12%, var(--bg));
+}
+
+.pregame-mode-icon {
+  font-size: 1.8rem;
+  line-height: 1;
+}
+
+.pregame-mode-label {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  color: var(--text);
+}
+
+.pregame-mode-desc {
+  font-size: 0.62rem;
+  color: var(--text-dim);
+  text-align: center;
+}
+
+/* ── Instructions list ── */
+.pregame-instr-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.pregame-instr-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pregame-instr-icon {
+  min-width: 36px;
+  text-align: center;
+  font-size: 0.9rem;
+  font-weight: 900;
+  color: var(--accent2);
+  letter-spacing: 1px;
+}
+
+.pregame-instr-text {
+  font-size: 0.74rem;
+  color: var(--text);
+  line-height: 1.3;
+}
+
+/* ── Don't show again checkbox ── */
+.pregame-check-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  user-select: none;
+}
+
+.pregame-check-row input[type="checkbox"] {
+  width: 15px;
+  height: 15px;
+  accent-color: var(--accent2);
+  cursor: pointer;
+}
+
+/* ── Continue / Play button ── */
+.pregame-continue-btn {
+  width: 100%;
+  padding: 11px;
+  border-radius: 8px;
+  border: none;
+  background: var(--accent2);
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: opacity 0.12s;
+}
+
+.pregame-continue-btn:active {
+  opacity: 0.8;
+}
+
+/* ===== SWIPE MODE — board takes extra space, no button row ===== */
+.msp-board-swipe {
+  position: relative;
+  touch-action: none; /* prevent browser scroll hijack */
+}
+
+.swipe-hint {
+  position: absolute;
+  bottom: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.35);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
 /* ===== WIN BANNER variants ===== */
 .win-banner {
   background: var(--panel-bg);

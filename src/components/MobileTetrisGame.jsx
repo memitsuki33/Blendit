@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useTetrisEngine } from '../hooks/useTetrisEngine.js';
+import { useSwipeControls } from '../hooks/useSwipeControls.js';
 import TetrisBoard, { PiecePreview } from './TetrisBoard.jsx';
-import ColorSequenceModal from './ColorSequenceModal.jsx';
 import SettingsModal from './SettingsModal.jsx';
+import MobilePreGameModal from './MobilePreGameModal.jsx';
 import { formatScore } from '../utils/colors.js';
-import {
-  playMove, playHardDrop, playSoftDrop, playHold, playLock,
-} from '../utils/soundEffects.js';
+import { playMove, playHardDrop, playSoftDrop, playHold } from '../utils/soundEffects.js';
 
 export default function MobileTetrisGame({
   onBack,
@@ -16,12 +15,16 @@ export default function MobileTetrisGame({
   soundEnabled, onSoundEnabled,
   musicEnabled, onMusicEnabled,
 }) {
+  const [showPreGame,  setShowPreGame]  = useState(true);
+  const [controlMode,  setControlMode]  = useState(
+    () => localStorage.getItem('blendIt_controlMode') || 'button'
+  );
   const [showSettings, setShowSettings] = useState(false);
 
   const { state, moveLeft, moveRight, softDrop, hardDrop, rotate, hold, restart } =
-    useTetrisEngine({ startLevel, startScore, paused: showSettings, gravity: true });
+    useTetrisEngine({ startLevel, startScore, paused: showSettings || showPreGame, gravity: true });
 
-  // Visual press feedback
+  // Visual press feedback (button mode)
   const [pressedKey, setPressedKey] = useState(null);
   const pressTimer = useRef(null);
   const flashPress = (key) => {
@@ -30,8 +33,7 @@ export default function MobileTetrisGame({
     pressTimer.current = setTimeout(() => setPressedKey(null), 100);
   };
 
-  // Per-button 100 ms cooldown. tap() is used on onPointerDown only — no onClick
-  // on game buttons, so each physical press can only fire once.
+  // Per-button 100 ms cooldown
   const cooldownMap = useRef({});
   const tap = (key, fn) => (e) => {
     e.preventDefault();
@@ -51,41 +53,64 @@ export default function MobileTetrisGame({
     }
   }, [state.level]);
 
-  const blocked = state.gameOver || showSettings;
+  const blocked = state.gameOver || showSettings || showPreGame;
 
-  const handleLeft    = () => { if (blocked) return; flashPress('left');   playMove();     moveLeft(); };
-  const handleRight   = () => { if (blocked) return; flashPress('right');  playMove();     moveRight(); };
-  const handleSoft    = () => { if (blocked) return; flashPress('soft');   playSoftDrop(); softDrop(); };
-  const handleHard    = () => { if (blocked) return; flashPress('hard');   playHardDrop(); hardDrop(); };
-  const handleRotate  = () => { if (blocked) return; flashPress('rotate'); playMove();     rotate(); };
-  const handleHold    = () => { if (blocked) return; flashPress('hold');   playHold();     hold(); };
-
+  // Game actions
+  const handleLeft   = () => { if (blocked) return; flashPress('left');   playMove();     moveLeft(); };
+  const handleRight  = () => { if (blocked) return; flashPress('right');  playMove();     moveRight(); };
+  const handleSoft   = () => { if (blocked) return; flashPress('soft');   playSoftDrop(); softDrop(); };
+  const handleHard   = () => { if (blocked) return; flashPress('hard');   playHardDrop(); hardDrop(); };
+  const handleRotate = () => { if (blocked) return; flashPress('rotate'); playMove();     rotate(); };
+  const handleHold   = () => { if (blocked) return; flashPress('hold');   playHold();     hold(); };
   const handleRestart = () => restart(startLevel);
+
+  // Swipe controls (tetris: tap = rotate)
+  const swipeHandlers = useSwipeControls({
+    enabled: controlMode === 'swipe' && !blocked,
+    onLeft:  handleLeft,
+    onRight: handleRight,
+    onDown:  handleSoft,
+    onUp:    handleHard,
+    onTap:   handleRotate,
+  });
 
   const ctrlClass = (key, extra = '') =>
     `msp-ctrl-btn${pressedKey === key ? ' msp-ctrl-pressed' : ''}${extra ? ' ' + extra : ''}`;
 
   const { score, level, linesCleared = 0, nextPieceType, nextPieceColors, heldPiece, holdUsed } = state;
 
+  function handlePreGameReady(chosenMode) {
+    setControlMode(chosenMode);
+    setShowPreGame(false);
+  }
+
+  function handleControlModeChange(newMode) {
+    setControlMode(newMode);
+    localStorage.setItem('blendIt_controlMode', newMode);
+  }
+
   return (
-    <div className="msp-root">
+    <div className={`msp-root${controlMode === 'swipe' ? ' msp-swipe-mode' : ''}`}>
 
       {/* ── Board ── */}
-      <div className="msp-board-area">
+      <div
+        className={`msp-board-area${controlMode === 'swipe' ? ' msp-board-swipe' : ''}`}
+        {...(controlMode === 'swipe' ? swipeHandlers : {})}
+      >
         <TetrisBoard state={state} animSpeed={animSpeed} />
+        {controlMode === 'swipe' && !state.gameOver && !showSettings && (
+          <div className="swipe-hint">swipe to play • tap = rotate</div>
+        )}
       </div>
 
-      {/* ── NEXT row: real piece preview + 4 empty slots ── */}
+      {/* ── NEXT row ── */}
       <div className="msp-next-row">
-        {/* First slot — actual next piece */}
         <div className="msp-next-slot">
           <span className="msp-slot-label">NEXT</span>
           <div className="msp-tetris-preview">
             <PiecePreview type={nextPieceType} colors={nextPieceColors} cellSize={10} />
           </div>
         </div>
-
-        {/* Slots 1–4 — locked placeholders */}
         {[1, 2, 3, 4].map((i) => (
           <div key={i} className="msp-next-slot">
             <span className="msp-slot-label">NEXT</span>
@@ -100,74 +125,64 @@ export default function MobileTetrisGame({
           <span className="msp-chip-label">SCORE</span>
           <span className="msp-chip-val">{formatScore(score)}</span>
         </div>
-
         <div className="msp-info-chip">
           <span className="msp-chip-label">LEVEL</span>
           <span className="msp-chip-val msp-chip-val-red">{level}</span>
         </div>
-
         <div className="msp-info-chip">
           <span className="msp-chip-label">LINES</span>
           <span className="msp-chip-val">{linesCleared}</span>
         </div>
-
-        {/* Hold display */}
         <div className="msp-info-chip">
           <span className="msp-chip-label">HOLD</span>
-          <div
-            className="msp-tetris-hold"
-            style={{ opacity: holdUsed ? 0.4 : 1 }}
-          >
+          <div className="msp-tetris-hold" style={{ opacity: holdUsed ? 0.4 : 1 }}>
             {heldPiece
               ? <PiecePreview type={heldPiece.type} colors={heldPiece.colors} cellSize={8} />
               : <div className="msp-hold-mini" style={{ border: '1px dashed var(--border)', background: 'transparent' }} />
             }
           </div>
         </div>
-
-        <button
-          className="msp-info-btn"
-          onClick={() => setShowSettings(true)}
-        >
-          SETTINGS
-        </button>
-
-        <button
-          className="msp-info-btn msp-info-btn-pill"
-          onClick={onBack}
-        >
-          MENU
-        </button>
+        <button className="msp-info-btn" onClick={() => setShowSettings(true)}>SETTINGS</button>
+        <button className="msp-info-btn msp-info-btn-pill" onClick={onBack}>MENU</button>
       </div>
 
-      {/* ── Bottom touch controls (6 buttons) ── */}
-      {/* Order: HOLD | hard-drop (yellow) | ROTATE | ◀ | ▼ | ▶ */}
-      <div className="msp-controls">
-        {state.gameOver ? (
-          <button className="btn btn-primary msp-restart-btn" onClick={handleRestart}>
-            Play Again
-          </button>
-        ) : (
-          <>
-            <button className={ctrlClass('hold')}   onPointerDown={tap('hold',   handleHold)}>HOLD</button>
-            <button className={ctrlClass('hard', 'msp-ctrl-hard')} onPointerDown={tap('hard', handleHard)} />
-            <button className={ctrlClass('rotate')} onPointerDown={tap('rotate', handleRotate)}>↻</button>
-            <button className={ctrlClass('left')}   onPointerDown={tap('left',   handleLeft)}>◀</button>
-            <button className={ctrlClass('soft')}   onPointerDown={tap('soft',   handleSoft)}>▼</button>
-            <button className={ctrlClass('right')}  onPointerDown={tap('right',  handleRight)}>▶</button>
-          </>
-        )}
-      </div>
+      {/* ── Button controls (hidden in swipe mode) ── */}
+      {controlMode === 'button' && (
+        <div className="msp-controls">
+          {state.gameOver ? (
+            <button className="btn btn-primary msp-restart-btn" onClick={handleRestart}>Play Again</button>
+          ) : (
+            <>
+              <button className={ctrlClass('hold')}   onPointerDown={tap('hold',   handleHold)}>HOLD</button>
+              <button className={ctrlClass('hard', 'msp-ctrl-hard')} onPointerDown={tap('hard', handleHard)} />
+              <button className={ctrlClass('rotate')} onPointerDown={tap('rotate', handleRotate)}>↻</button>
+              <button className={ctrlClass('left')}   onPointerDown={tap('left',   handleLeft)}>◀</button>
+              <button className={ctrlClass('soft')}   onPointerDown={tap('soft',   handleSoft)}>▼</button>
+              <button className={ctrlClass('right')}  onPointerDown={tap('right',  handleRight)}>▶</button>
+            </>
+          )}
+        </div>
+      )}
+
+      {/* Swipe mode game-over restart */}
+      {controlMode === 'swipe' && state.gameOver && (
+        <div className="msp-controls">
+          <button className="btn btn-primary msp-restart-btn" onClick={handleRestart}>Play Again</button>
+        </div>
+      )}
+
+      {/* ── Modals ── */}
+      {showPreGame && (
+        <MobilePreGameModal gameType="tetris" onReady={handlePreGameReady} />
+      )}
 
       {showSettings && (
         <SettingsModal
           onClose={() => setShowSettings(false)}
-          animSpeed={animSpeed}
-          onAnimSpeed={onAnimSpeed}
-          soundEnabled={soundEnabled}
-          onSoundEnabled={onSoundEnabled}
-          musicEnabled={musicEnabled}
-          onMusicEnabled={onMusicEnabled}
+          animSpeed={animSpeed}     onAnimSpeed={onAnimSpeed}
+          soundEnabled={soundEnabled} onSoundEnabled={onSoundEnabled}
+          musicEnabled={musicEnabled} onMusicEnabled={onMusicEnabled}
+          controlMode={controlMode}   onControlMode={handleControlModeChange}
           onReset={handleRestart}
         />
       )}
