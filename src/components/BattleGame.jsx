@@ -210,7 +210,7 @@ export default function BattleGame({
               mode="battle"
               pendingGarbage={p1.state.pendingIncoming}
             />
-            <GameBoard state={p1.state} animSpeed={animSpeed} />
+            <GameBoard state={p1.state} animSpeed={animSpeed} mode="battle" />
           </div>
         </div>
 
@@ -222,7 +222,7 @@ export default function BattleGame({
         <div className="player-section p2-section">
           <span className="player-label p2">/ = Hold  |  Player 2 — Arrows / Space</span>
           <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
-            <GameBoard state={p2.state} animSpeed={animSpeed} />
+            <GameBoard state={p2.state} animSpeed={animSpeed} mode="battle" />
             <InfoPanel
               state={p2.state}
               mode="battle"

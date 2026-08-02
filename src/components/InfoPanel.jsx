@@ -64,8 +64,8 @@ export default function InfoPanel({ state, mode = 'single', pendingGarbage = 0 }
         />
       </div>
 
-      {/* Combo streak */}
-      {mergeStreak > 0 && (
+      {/* Combo streak — hidden in battle mode */}
+      {mergeStreak > 0 && mode !== 'battle' && (
         <div className="info-block">
           <span className="info-label">Combo</span>
           <span className="info-value" style={{ color: 'var(--accent)', fontSize: '1rem' }}>
