@@ -1,8 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import SettingsModal from './SettingsModal.jsx';
 import ColorSequenceModal from './ColorSequenceModal.jsx';
 import ShopModal from './ShopModal.jsx';
 import { levelThreshold, MAX_LEVEL } from '../utils/constants.js';
+
+function getWsUrl() {
+  const proto = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+  return `${proto}//${window.location.host}/game-ws`;
+}
 
 const NAV_ITEMS = ['HOME', 'LEVELS', 'RANKS', 'TROPHIES', 'CHATS', 'SETTINGS', 'USER DATA', 'LOG OUT'];
 
@@ -16,7 +21,7 @@ function fmtScore(n) {
 }
 
 export default function DashboardScreen({
-  onSinglePlayer, onMobileSinglePlayer, onTetris, onMobileTetris, onPvP, onLogOut,
+  onSinglePlayer, onMobileSinglePlayer, onTetris, onMobileTetris, onPvP, onOnlineStart, onLogOut,
   animSpeed, onAnimSpeed,
   soundEnabled, onSoundEnabled,
   musicEnabled, onMusicEnabled,
@@ -26,6 +31,23 @@ export default function DashboardScreen({
   const [showSettings, setShowSettings] = useState(false);
   const [showColors, setShowColors] = useState(false);
   const [showShop, setShowShop] = useState(false);
+
+  // Online lobby state
+  const [lobbyPhase, setLobbyPhase] = useState('menu'); // menu | creating | waiting | joining | error
+  const [roomCode, setRoomCode] = useState('');
+  const [joinInput, setJoinInput] = useState('');
+  const [lobbyError, setLobbyError] = useState('');
+  const [onlineLevel, setOnlineLevel] = useState(0);
+  const wsRef = useRef(null);
+
+  // Clean up WebSocket when leaving online-lobby panel or unmounting
+  useEffect(() => {
+    if (panel !== 'online-lobby' && wsRef.current) {
+      wsRef.current.close();
+      wsRef.current = null;
+    }
+  }, [panel]);
+  useEffect(() => () => { if (wsRef.current) wsRef.current.close(); }, []);
 
   // Coins & purchased slots — persisted in localStorage
   const [coins] = useState(() =>
@@ -147,7 +169,13 @@ export default function DashboardScreen({
     return (
       <div className="dashboard-center dashboard-sub-center">
         <h2 className="dashboard-sub-title">Player vs Player</h2>
-        <button className="dash-btn dash-btn-orange" onClick={onPvP}>
+        <button className="dash-btn dash-btn-orange" onClick={() => {
+          setLobbyPhase('menu');
+          setRoomCode('');
+          setJoinInput('');
+          setLobbyError('');
+          setPanel('online-lobby');
+        }}>
           Online Mode
         </button>
         <button className="dash-btn dash-btn-blue" onClick={onPvP}>
@@ -155,6 +183,141 @@ export default function DashboardScreen({
         </button>
         <button className="dash-btn dash-btn-ghost" onClick={() => setPanel('home')}>
           Back
+        </button>
+      </div>
+    );
+  }
+
+  // ── Online lobby WebSocket helpers ───────────────────────────────────────
+  function openWs(onMessage) {
+    if (wsRef.current) { wsRef.current.close(); wsRef.current = null; }
+    const ws = new WebSocket(getWsUrl());
+    wsRef.current = ws;
+    ws.onmessage = (e) => {
+      let msg; try { msg = JSON.parse(e.data); } catch { return; }
+      onMessage(ws, msg);
+    };
+    ws.onerror = () => { setLobbyPhase('error'); setLobbyError('Connection failed. Try again.'); };
+    ws.onclose = (ev) => {
+      if (ev.code !== 1000) {
+        setLobbyPhase(p => p === 'waiting' ? 'error' : p);
+        setLobbyError('Disconnected. Please try again.');
+      }
+    };
+    return ws;
+  }
+
+  function handleCreate() {
+    setLobbyPhase('creating');
+    setLobbyError('');
+    const ws = openWs((ws, msg) => {
+      if (msg.type === 'created') { setRoomCode(msg.code); setLobbyPhase('waiting'); }
+      if (msg.type === 'start')   { onOnlineStart({ ws, level: onlineLevel, playerIndex: msg.playerIndex }); }
+      if (msg.type === 'error')   { setLobbyPhase('error'); setLobbyError(msg.message); }
+    });
+    ws.onopen = () => ws.send(JSON.stringify({ type: 'create', level: onlineLevel }));
+  }
+
+  function handleJoin() {
+    const code = joinInput.trim().toUpperCase();
+    if (code.length !== 4) { setLobbyError('Enter the 4-letter room code.'); return; }
+    setLobbyPhase('joining');
+    setLobbyError('');
+    const ws = openWs((ws, msg) => {
+      if (msg.type === 'joined') { setRoomCode(code); setLobbyPhase('waiting'); }
+      if (msg.type === 'start')  { onOnlineStart({ ws, level: msg.level ?? onlineLevel, playerIndex: msg.playerIndex }); }
+      if (msg.type === 'error')  { setLobbyPhase('menu'); setLobbyError(msg.message); ws.close(); }
+    });
+    ws.onopen = () => ws.send(JSON.stringify({ type: 'join', code }));
+  }
+
+  function handleLobbyBack() {
+    if (wsRef.current) { wsRef.current.close(); wsRef.current = null; }
+    if (lobbyPhase === 'menu' || lobbyPhase === 'error') {
+      setPanel('pvp');
+    } else {
+      setLobbyPhase('menu');
+      setRoomCode('');
+      setJoinInput('');
+      setLobbyError('');
+    }
+  }
+
+  function renderOnlineLobbyPanel() {
+    const busy = lobbyPhase === 'creating' || lobbyPhase === 'joining';
+    return (
+      <div className="dashboard-center dashboard-sub-center">
+        <h2 className="dashboard-sub-title">Online Mode</h2>
+
+        {(lobbyPhase === 'menu' || busy) && (
+          <>
+            {/* Level picker */}
+            <div className="ol-level-row">
+              <span className="ol-label">Starting Level</span>
+              <div className="ol-stepper">
+                <button className="dash-btn dash-btn-ghost ol-step-btn"
+                  onClick={() => setOnlineLevel(l => Math.max(0, l - 1))}
+                  disabled={busy}>−</button>
+                <span className="ol-level-val">{onlineLevel}</span>
+                <button className="dash-btn dash-btn-ghost ol-step-btn"
+                  onClick={() => setOnlineLevel(l => Math.min(60, l + 1))}
+                  disabled={busy}>+</button>
+              </div>
+            </div>
+
+            <button
+              className="dash-btn dash-btn-orange ol-wide"
+              onClick={handleCreate}
+              disabled={busy}
+            >
+              {lobbyPhase === 'creating' ? 'Connecting...' : 'Create Room'}
+            </button>
+
+            <div className="ol-or">— or —</div>
+
+            <div className="ol-join-row">
+              <input
+                className="ol-code-input"
+                placeholder="XXXX"
+                maxLength={4}
+                value={joinInput}
+                onChange={e => setJoinInput(e.target.value.toUpperCase())}
+                onKeyDown={e => e.key === 'Enter' && handleJoin()}
+                disabled={busy}
+              />
+              <button
+                className="dash-btn dash-btn-blue"
+                onClick={handleJoin}
+                disabled={busy}
+              >
+                {lobbyPhase === 'joining' ? '...' : 'Join'}
+              </button>
+            </div>
+
+            {lobbyError && <div className="ol-error">{lobbyError}</div>}
+          </>
+        )}
+
+        {lobbyPhase === 'waiting' && (
+          <div className="ol-waiting">
+            <div className="ol-code-display">
+              <span className="ol-label">Room Code</span>
+              <span className="ol-code-big">{roomCode}</span>
+              <span className="ol-label">Share with your opponent</span>
+            </div>
+            <div className="lobby-spinner" />
+            <span className="ol-label">Waiting for opponent...</span>
+          </div>
+        )}
+
+        {lobbyPhase === 'error' && (
+          <div className="ol-waiting">
+            <div className="ol-error" style={{ fontSize: '0.9rem', textAlign: 'center' }}>{lobbyError}</div>
+          </div>
+        )}
+
+        <button className="dash-btn dash-btn-ghost" onClick={handleLobbyBack}>
+          {lobbyPhase === 'waiting' ? 'Cancel' : 'Back'}
         </button>
       </div>
     );
@@ -191,10 +354,11 @@ export default function DashboardScreen({
             </div>
           </div>
         )}
-        {panel === 'single-player' && renderSinglePlayerPanel()}
-        {panel === 'tetris-mode'   && renderTetrisPanel()}
-        {panel === 'normal-mode'   && renderNormalPanel()}
-        {panel === 'pvp'           && renderPvpPanel()}
+        {panel === 'single-player'  && renderSinglePlayerPanel()}
+        {panel === 'tetris-mode'    && renderTetrisPanel()}
+        {panel === 'normal-mode'    && renderNormalPanel()}
+        {panel === 'pvp'            && renderPvpPanel()}
+        {panel === 'online-lobby'   && renderOnlineLobbyPanel()}
 
         {/* Right nav sidebar */}
         <nav className="dashboard-nav">

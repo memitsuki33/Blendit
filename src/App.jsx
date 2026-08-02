@@ -75,6 +75,7 @@ export default function App() {
         onMobileTetris={(cfg) => { setGameConfig(cfg); setScreen('mobile-tetris'); }}
         onTetris={(cfg) => { setGameConfig(cfg); setScreen('tetris'); }}
         onPvP={() => setScreen('battle-select')}
+        onOnlineStart={(cfg) => { setGameConfig(cfg); setScreen('battle'); }}
         onLogOut={() => setScreen('landing')}
         animSpeed={animSpeed}
         onAnimSpeed={setAnimSpeed}

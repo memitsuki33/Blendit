@@ -2070,6 +2070,115 @@ kbd {
   to { transform: rotate(360deg); }
 }
 
+/* ===== DESKTOP ONLINE LOBBY (dashboard sub-panel) ===== */
+.ol-level-row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.ol-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.ol-stepper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ol-step-btn {
+  width: 44px !important;
+  height: 44px !important;
+  min-width: unset !important;
+  font-size: 1.3rem !important;
+  padding: 0 !important;
+  letter-spacing: 0 !important;
+}
+
+.ol-level-val {
+  font-size: 2rem;
+  font-weight: 900;
+  color: var(--accent);
+  width: 52px;
+  text-align: center;
+  letter-spacing: -1px;
+}
+
+.ol-wide {
+  width: min(280px, 55vw);
+}
+
+.ol-or {
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.ol-join-row {
+  display: flex;
+  gap: 10px;
+  width: min(280px, 55vw);
+}
+
+.ol-code-input {
+  flex: 1;
+  background: #1a2540;
+  border: 1.5px solid #2a3f6a;
+  border-radius: 8px;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 1.4rem;
+  font-weight: 900;
+  letter-spacing: 8px;
+  text-transform: uppercase;
+  text-align: center;
+  padding: 10px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.ol-code-input:focus { border-color: var(--accent2); }
+.ol-code-input::placeholder { color: #334155; letter-spacing: 4px; }
+
+.ol-error {
+  color: var(--danger);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.ol-waiting {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.ol-code-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  background: #1a2540;
+  border: 1.5px solid #2a3f6a;
+  border-radius: 12px;
+  padding: 20px 36px;
+}
+
+.ol-code-big {
+  font-size: 3.2rem;
+  font-weight: 900;
+  letter-spacing: 12px;
+  color: var(--accent);
+}
+
 /* ===== MOBILE BATTLE ===== */
 .mobile-battle {
   display: flex;
