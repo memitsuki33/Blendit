@@ -21,7 +21,7 @@ function fmtScore(n) {
 }
 
 export default function DashboardScreen({
-  onSinglePlayer, onMobileSinglePlayer, onTetris, onMobileTetris, onPvP, onOnlineStart, onLogOut,
+  onSinglePlayer, onMobileSinglePlayer, onTetris, onMobileTetris, onLocalBattle, onOnlineStart, onLogOut,
   animSpeed, onAnimSpeed,
   soundEnabled, onSoundEnabled,
   musicEnabled, onMusicEnabled,
@@ -31,6 +31,9 @@ export default function DashboardScreen({
   const [showSettings, setShowSettings] = useState(false);
   const [showColors, setShowColors] = useState(false);
   const [showShop, setShowShop] = useState(false);
+
+  // 2-player local battle level
+  const [localLevel, setLocalLevel] = useState(0);
 
   // Online lobby state
   const [lobbyPhase, setLobbyPhase] = useState('menu'); // menu | creating | waiting | joining | error
@@ -178,10 +181,59 @@ export default function DashboardScreen({
         }}>
           Online Mode
         </button>
-        <button className="dash-btn dash-btn-blue" onClick={onPvP}>
+        <button className="dash-btn dash-btn-blue" onClick={() => {
+          setLocalLevel(0);
+          setPanel('two-player');
+        }}>
           2 Player Mode
         </button>
         <button className="dash-btn dash-btn-ghost" onClick={() => setPanel('home')}>
+          Back
+        </button>
+      </div>
+    );
+  }
+
+  function renderTwoPlayerPanel() {
+    return (
+      <div className="dashboard-center dashboard-sub-center">
+        <h2 className="dashboard-sub-title">Player vs Player</h2>
+
+        <div className="ol-level-row">
+          <span className="ol-label">Starting Level</span>
+          <div className="ol-stepper">
+            <button
+              className="dash-btn dash-btn-ghost ol-step-btn"
+              onClick={() => setLocalLevel(l => Math.max(0, l - 1))}
+            >−</button>
+            <span className="ol-level-val">{localLevel}</span>
+            <button
+              className="dash-btn dash-btn-ghost ol-step-btn"
+              onClick={() => setLocalLevel(l => Math.min(MAX_LEVEL, l + 1))}
+            >+</button>
+          </div>
+          <span className="ol-label" style={{ color: 'var(--text-dim)', fontSize: '0.65rem', marginTop: 2 }}>
+            Both players start at the same level
+          </span>
+        </div>
+
+        <button
+          className="dash-btn dash-btn-orange ol-wide"
+          onClick={() => onLocalBattle({ level: localLevel })}
+        >
+          Start Game
+        </button>
+
+        <button className="dash-btn dash-btn-ghost" onClick={() => setShowColors(true)}>
+          Color Cycle Guide
+        </button>
+
+        <div className="tp-controls-hint">
+          <strong>P1:</strong> A/D = move &nbsp; S = soft drop &nbsp; W = hard drop<br />
+          <strong>P2:</strong> ← / → = move &nbsp; ↓ = soft drop &nbsp; ↑ = hard drop
+        </div>
+
+        <button className="dash-btn dash-btn-ghost" onClick={() => setPanel('pvp')}>
           Back
         </button>
       </div>
@@ -358,6 +410,7 @@ export default function DashboardScreen({
         {panel === 'tetris-mode'    && renderTetrisPanel()}
         {panel === 'normal-mode'    && renderNormalPanel()}
         {panel === 'pvp'            && renderPvpPanel()}
+        {panel === 'two-player'     && renderTwoPlayerPanel()}
         {panel === 'online-lobby'   && renderOnlineLobbyPanel()}
 
         {/* Right nav sidebar */}

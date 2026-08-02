@@ -2179,6 +2179,21 @@ kbd {
   color: var(--accent);
 }
 
+/* 2-player controls hint inside dashboard panel */
+.tp-controls-hint {
+  background: #1a2540;
+  border: 1.5px solid #2a3f6a;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  line-height: 2;
+  text-align: center;
+  width: min(280px, 55vw);
+}
+
 /* ===== MOBILE BATTLE ===== */
 .mobile-battle {
   display: flex;
