@@ -21,20 +21,23 @@ export default function MobileTetrisGame({
   const { state, moveLeft, moveRight, softDrop, hardDrop, rotate, hold, restart } =
     useTetrisEngine({ startLevel, startScore, paused: showSettings, gravity: true });
 
-  // 0.1 s visual press feedback + cooldown
+  // Visual press feedback
   const [pressedKey, setPressedKey] = useState(null);
   const pressTimer = useRef(null);
-  const lastPressTime = useRef(0);
-  const COOLDOWN = 100; // ms
   const flashPress = (key) => {
     if (pressTimer.current) clearTimeout(pressTimer.current);
     setPressedKey(key);
     pressTimer.current = setTimeout(() => setPressedKey(null), 100);
   };
-  const withCooldown = (fn) => () => {
+
+  // Per-button 100 ms cooldown. tap() is used on onPointerDown only — no onClick
+  // on game buttons, so each physical press can only fire once.
+  const cooldownMap = useRef({});
+  const tap = (key, fn) => (e) => {
+    e.preventDefault();
     const now = Date.now();
-    if (now - lastPressTime.current < COOLDOWN) return;
-    lastPressTime.current = now;
+    if (now - (cooldownMap.current[key] || 0) < 100) return;
+    cooldownMap.current[key] = now;
     fn();
   };
 
@@ -50,16 +53,14 @@ export default function MobileTetrisGame({
 
   const blocked = state.gameOver || showSettings;
 
-  const handleLeft    = withCooldown(() => { if (blocked) return; flashPress('left');   playMove();     moveLeft(); });
-  const handleRight   = withCooldown(() => { if (blocked) return; flashPress('right');  playMove();     moveRight(); });
-  const handleSoft    = withCooldown(() => { if (blocked) return; flashPress('soft');   playSoftDrop(); softDrop(); });
-  const handleHard    = withCooldown(() => { if (blocked) return; flashPress('hard');   playHardDrop(); hardDrop(); });
-  const handleRotate  = withCooldown(() => { if (blocked) return; flashPress('rotate'); playMove();     rotate(); });
-  const handleHold    = withCooldown(() => { if (blocked) return; flashPress('hold');   playHold();     hold(); });
+  const handleLeft    = () => { if (blocked) return; flashPress('left');   playMove();     moveLeft(); };
+  const handleRight   = () => { if (blocked) return; flashPress('right');  playMove();     moveRight(); };
+  const handleSoft    = () => { if (blocked) return; flashPress('soft');   playSoftDrop(); softDrop(); };
+  const handleHard    = () => { if (blocked) return; flashPress('hard');   playHardDrop(); hardDrop(); };
+  const handleRotate  = () => { if (blocked) return; flashPress('rotate'); playMove();     rotate(); };
+  const handleHold    = () => { if (blocked) return; flashPress('hold');   playHold();     hold(); };
 
   const handleRestart = () => restart(startLevel);
-
-  const touch = (fn) => (e) => { e.preventDefault(); fn(); };
 
   const ctrlClass = (key, extra = '') =>
     `msp-ctrl-btn${pressedKey === key ? ' msp-ctrl-pressed' : ''}${extra ? ' ' + extra : ''}`;
@@ -150,12 +151,12 @@ export default function MobileTetrisGame({
           </button>
         ) : (
           <>
-            <button className={ctrlClass('hold')}   onTouchStart={touch(handleHold)}   onClick={handleHold}>HOLD</button>
-            <button className={ctrlClass('hard', 'msp-ctrl-hard')} onTouchStart={touch(handleHard)} onClick={handleHard} />
-            <button className={ctrlClass('rotate')} onTouchStart={touch(handleRotate)} onClick={handleRotate}>↻</button>
-            <button className={ctrlClass('left')}   onTouchStart={touch(handleLeft)}   onClick={handleLeft}>◀</button>
-            <button className={ctrlClass('soft')}   onTouchStart={touch(handleSoft)}   onClick={handleSoft}>▼</button>
-            <button className={ctrlClass('right')}  onTouchStart={touch(handleRight)}  onClick={handleRight}>▶</button>
+            <button className={ctrlClass('hold')}   onPointerDown={tap('hold',   handleHold)}>HOLD</button>
+            <button className={ctrlClass('hard', 'msp-ctrl-hard')} onPointerDown={tap('hard', handleHard)} />
+            <button className={ctrlClass('rotate')} onPointerDown={tap('rotate', handleRotate)}>↻</button>
+            <button className={ctrlClass('left')}   onPointerDown={tap('left',   handleLeft)}>◀</button>
+            <button className={ctrlClass('soft')}   onPointerDown={tap('soft',   handleSoft)}>▼</button>
+            <button className={ctrlClass('right')}  onPointerDown={tap('right',  handleRight)}>▶</button>
           </>
         )}
       </div>
