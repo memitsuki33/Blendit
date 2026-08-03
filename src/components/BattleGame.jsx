@@ -1,14 +1,89 @@
 import React, { useEffect, useCallback, useRef, useState } from 'react';
 import { useGameEngine } from '../hooks/useGameEngine.js';
 import GameBoard from './GameBoard.jsx';
-import InfoPanel from './InfoPanel.jsx';
 import SettingsModal from './SettingsModal.jsx';
-import { playMove, playHardDrop, playSoftDrop, playHold, playLock, playGarbageSend, playGarbageReceive, playTimedGarbage } from '../utils/soundEffects.js';
+import { getTileColor, formatScore } from '../utils/colors.js';
+import { playMove, playHardDrop, playSoftDrop, playHold, playLock, playGarbageSend, playGarbageReceive } from '../utils/soundEffects.js';
 
 function isMobile() {
   return (
     typeof window !== 'undefined' &&
     (navigator.maxTouchPoints > 0 || window.innerWidth < 768)
+  );
+}
+
+/* ── Reusable panel blocks ─────────────────────────────────────────── */
+function InfoBlock({ label, children }) {
+  return (
+    <div className="bg2-block">
+      <span className="bg2-label">{label}</span>
+      {children}
+    </div>
+  );
+}
+
+function HoldBlock({ state }) {
+  const heldColor = state.heldValue ? getTileColor(state.heldValue) : null;
+  return (
+    <InfoBlock label="HOLD">
+      <div
+        className="bg2-tile"
+        style={{
+          background: heldColor ? heldColor.bg : 'transparent',
+          border: heldColor ? 'none' : '1.5px dashed #1e3a5f',
+          opacity: state.holdUsed ? 0.4 : 1,
+        }}
+      />
+    </InfoBlock>
+  );
+}
+
+function NextBlock({ value, label = 'NEXT' }) {
+  const color = value != null ? getTileColor(value) : null;
+  return (
+    <div className="bg2-block">
+      <span className="bg2-label">{label}</span>
+      <div
+        className="bg2-tile"
+        style={{
+          background: color ? color.bg : 'transparent',
+          border: color ? 'none' : '1.5px dashed #1e3a5f',
+        }}
+      />
+    </div>
+  );
+}
+
+function PlayerSection({ state, animSpeed, side }) {
+  const queue = state.nextQueue || (state.nextPieceValue != null ? [state.nextPieceValue] : []);
+  const score = state.score ?? 0;
+  const level = state.level ?? 0;
+
+  return (
+    <div className={`bg2-player bg2-player--${side}`}>
+      {/* Left: info column */}
+      <div className="bg2-info-col">
+        <InfoBlock label="SCORE">
+          <span className="bg2-value">{formatScore(score)}</span>
+        </InfoBlock>
+        <InfoBlock label="LEVEL">
+          <span className="bg2-value bg2-value--red">{level}</span>
+        </InfoBlock>
+        <HoldBlock state={state} />
+      </div>
+
+      {/* Center: game board */}
+      <div className="bg2-board-wrap">
+        <GameBoard state={state} animSpeed={animSpeed} mode="battle" />
+      </div>
+
+      {/* Right: next-piece queue */}
+      <div className="bg2-next-col">
+        {queue.map((val, i) => (
+          <NextBlock key={i} value={val} label={i === 0 ? 'NEXT' : 'NEXT'} />
+        ))}
+      </div>
+    </div>
   );
 }
 
@@ -32,14 +107,25 @@ export default function BattleGame({
     );
   }
 
-  const p1 = useGameEngine({ startLevel: level, mode: 'battle' });
-  const p2 = useGameEngine({ startLevel: level, mode: 'battle' });
+  const [paused, setPaused] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+
+  const p1 = useGameEngine({ startLevel: level, mode: 'battle', paused: paused || showSettings });
+  const p2 = useGameEngine({ startLevel: level, mode: 'battle', paused: paused || showSettings });
 
   const p1GarbageProcessed = useRef(0);
   const p2GarbageProcessed = useRef(0);
 
-  // P1 combos → queue garbage on P2
+  const gameEnded = p1.state.gameOver || p2.state.gameOver;
+
+  const winner = (() => {
+    if (!gameEnded) return null;
+    if (p1.state.gameOver && p2.state.gameOver) return 'Draw';
+    if (p1.state.gameOver) return 'Player 2';
+    return 'Player 1';
+  })();
+
+  // P1 combos → garbage on P2
   useEffect(() => {
     const sent = p1.state.totalGarbageSent;
     const newRows = sent - p1GarbageProcessed.current;
@@ -50,7 +136,7 @@ export default function BattleGame({
     }
   }, [p1.state.totalGarbageSent]);
 
-  // P2 combos → queue garbage on P1
+  // P2 combos → garbage on P1
   useEffect(() => {
     const sent = p2.state.totalGarbageSent;
     const newRows = sent - p2GarbageProcessed.current;
@@ -61,93 +147,43 @@ export default function BattleGame({
     }
   }, [p2.state.totalGarbageSent]);
 
-  // Garbage received — play warning when pendingIncoming grows
-  const p1PendingRef = useRef(0);
-  useEffect(() => {
-    if (p1.state.pendingIncoming > p1PendingRef.current) playGarbageReceive();
-    p1PendingRef.current = p1.state.pendingIncoming;
-  }, [p1.state.pendingIncoming]);
+  const handleKey = useCallback((e) => {
+    if (showSettings) return;
 
-  const p2PendingRef = useRef(0);
-  useEffect(() => {
-    if (p2.state.pendingIncoming > p2PendingRef.current) playGarbageReceive();
-    p2PendingRef.current = p2.state.pendingIncoming;
-  }, [p2.state.pendingIncoming]);
-
-  // Lock + timed garbage sounds (P1 drives the audio for both boards)
-  const p1TurnsRef = useRef(0);
-  useEffect(() => {
-    if (p1.state.turns !== p1TurnsRef.current) {
-      if (p1.state.timedGarbageThisTurn) playTimedGarbage();
-      else playLock();
+    // Pause toggle
+    if (e.key === 'Escape') {
+      setPaused(p => !p);
+      return;
     }
-    p1TurnsRef.current = p1.state.turns;
-  }, [p1.state.turns, p1.state.timedGarbageThisTurn]);
-
-  // When one player dies, immediately end the other player's game too
-  useEffect(() => {
-    if (p1.state.gameOver && !p2.state.gameOver) {
-      p2.forceGameOver();
-    }
-  }, [p1.state.gameOver]);
-
-  useEffect(() => {
-    if (p2.state.gameOver && !p1.state.gameOver) {
-      p1.forceGameOver();
-    }
-  }, [p2.state.gameOver]);
-
-  const p1Dead = p1.state.gameOver;
-  const p2Dead = p2.state.gameOver;
-  const gameEnded = p1Dead || p2Dead;
-  const winner = p1Dead && p2Dead
-    ? (p1.state.score > p2.state.score ? 'Player 1' : p2.state.score > p1.state.score ? 'Player 2' : 'Draw')
-    : p1Dead ? 'Player 2'
-    : p2Dead ? 'Player 1'
-    : null;
-
-  const handleKey = useCallback(
-    (e) => {
-      const key = e.key;
-      if (['ArrowLeft', 'ArrowRight', 'ArrowDown', 'ArrowUp', ' '].includes(key)) {
-        e.preventDefault();
-      }
-
-      if (key === 'Escape') {
-        setShowSettings(s => !s);
-        return;
-      }
-
-      if (key === 'Enter' && gameEnded) {
+    if (paused) return;
+    if (gameEnded) {
+      if (e.key === 'Enter') {
         p1GarbageProcessed.current = 0;
         p2GarbageProcessed.current = 0;
         p1.restart(level);
         p2.restart(level);
-        return;
       }
+      return;
+    }
 
-      if (!gameEnded && !showSettings) {
-        // Player 1: WASD + R = hold
-        switch (key) {
-          case 'a': case 'A': playMove(); p1.moveLeft(); break;
-          case 'd': case 'D': playMove(); p1.moveRight(); break;
-          case 's': case 'S': playSoftDrop(); p1.softDrop(); break;
-          case 'w': case 'W': playHardDrop(); p1.hardDrop(); break;
-          case 'r': case 'R': playHold(); p1.hold(); break;
-        }
-        // Player 2: Arrow keys + / = hold
-        switch (key) {
-          case 'ArrowLeft':  playMove(); p2.moveLeft(); break;
-          case 'ArrowRight': playMove(); p2.moveRight(); break;
-          case 'ArrowDown':  playSoftDrop(); p2.softDrop(); break;
-          case 'ArrowUp':    playHardDrop(); p2.hardDrop(); break;
-          case ' ':          playHardDrop(); p2.hardDrop(); break;
-          case '/':          playHold(); p2.hold(); break;
-        }
-      }
-    },
-    [p1, p2, gameEnded, level, showSettings]
-  );
+    // Player 1: A/D/S/W/R
+    switch (e.key) {
+      case 'a': case 'A': playMove(); p1.moveLeft();  break;
+      case 'd': case 'D': playMove(); p1.moveRight(); break;
+      case 's': case 'S': playSoftDrop(); p1.softDrop(); break;
+      case 'w': case 'W': playHardDrop(); p1.hardDrop(); break;
+      case 'r': case 'R': playHold(); p1.hold(); break;
+    }
+
+    // Player 2: Arrows / Space / /
+    switch (e.key) {
+      case 'ArrowLeft':  playMove(); p2.moveLeft();  break;
+      case 'ArrowRight': playMove(); p2.moveRight(); break;
+      case 'ArrowDown':  playSoftDrop(); p2.softDrop(); break;
+      case 'ArrowUp':    playHardDrop(); p2.hardDrop(); break;
+      case '/':          playHold(); p2.hold(); break;
+    }
+  }, [paused, gameEnded, showSettings, p1, p2, level]);
 
   useEffect(() => {
     window.addEventListener('keydown', handleKey);
@@ -157,79 +193,52 @@ export default function BattleGame({
   const handleRestart = () => {
     p1GarbageProcessed.current = 0;
     p2GarbageProcessed.current = 0;
+    setPaused(false);
     p1.restart(level);
     p2.restart(level);
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, position: 'relative' }}>
+    <div className="bg2-root">
+      {/* Background */}
       <div className="dashboard-bg dashboard-bg--pvp" />
-      {/* Back button pinned to top-left corner */}
-      <button
-        className="btn btn-ghost btn-sm"
-        onClick={onBack}
-        style={{ position: 'fixed', top: 12, left: 12, zIndex: 100 }}
-      >
-        Back
-      </button>
 
-      {/* Settings button pinned to top-right */}
-      <button
-        className="btn btn-ghost btn-sm"
-        onClick={() => setShowSettings(true)}
-        style={{ position: 'fixed', top: 12, right: 12, zIndex: 100 }}
-        title="Settings (Esc)"
-      >
-        Settings
-      </button>
-
-      <div className="back-row" style={{ justifyContent: 'center' }}>
-        <span style={{ color: 'var(--text-dim)', fontSize: '0.72rem', fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase' }}>
-          Battle — Level {level}
-        </span>
-        {gameEnded && (
-          <button className="btn btn-primary btn-sm" onClick={handleRestart}>
-            Rematch (Enter)
-          </button>
-        )}
+      {/* Players */}
+      <div className="bg2-players-row">
+        <PlayerSection state={p1.state} animSpeed={animSpeed} side="p1" />
+        <PlayerSection state={p2.state} animSpeed={animSpeed} side="p2" />
       </div>
 
+      {/* Winner banner */}
       {winner && (
-        <div className="win-banner" style={{ position: 'fixed', top: 52, left: '50%', transform: 'translateX(-50%)', zIndex: 50 }}>
-          {winner === 'Draw' ? 'DRAW' : `${winner.toUpperCase()} WINS`}
+        <div className="bg2-win-banner">
+          {winner === 'Draw' ? 'DRAW!' : `${winner.toUpperCase()} WINS!`}
+          <button className="bg2-rematch-btn" onClick={handleRestart}>
+            Rematch (Enter)
+          </button>
         </div>
       )}
 
-      <div className="battle-wrapper">
-        {/* Player 1 */}
-        <div className="player-section p1-section">
-          <span className="player-label p1">Player 1 — A D S W  |  R = Hold</span>
-          <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
-            <InfoPanel
-              state={p1.state}
-              mode="battle"
-              pendingGarbage={p1.state.pendingIncoming}
-            />
-            <GameBoard state={p1.state} animSpeed={animSpeed} mode="battle" />
-          </div>
+      {/* Pause overlay */}
+      {paused && !showSettings && (
+        <div className="bg2-pause-overlay">
+          <div className="bg2-pause-text">PAUSED</div>
+          <button className="bg2-resume-btn" onClick={() => setPaused(false)}>Resume (Esc)</button>
+          <button className="btn btn-ghost" onClick={() => { setPaused(false); setShowSettings(true); }}>Settings</button>
+          <button className="btn btn-ghost" onClick={onBack}>Back to Menu</button>
         </div>
+      )}
 
-        <div className="battle-vs">
-          <div className="vs-label">VS</div>
-        </div>
-
-        {/* Player 2 */}
-        <div className="player-section p2-section">
-          <span className="player-label p2">/ = Hold  |  Player 2 — Arrows / Space</span>
-          <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
-            <GameBoard state={p2.state} animSpeed={animSpeed} mode="battle" />
-            <InfoPanel
-              state={p2.state}
-              mode="battle"
-              pendingGarbage={p2.state.pendingIncoming}
-            />
-          </div>
-        </div>
+      {/* Bottom controls row */}
+      <div className="bg2-bottom-row">
+        <span className="bg2-controls-hint">P1: A D S W · R=Hold</span>
+        <button
+          className="bg2-pause-btn"
+          onClick={() => setPaused(p => !p)}
+        >
+          {paused ? 'RESUME' : 'PAUSE'}
+        </button>
+        <span className="bg2-controls-hint" style={{ textAlign: 'right' }}>P2: ← → ↓ ↑ · /=Hold</span>
       </div>
 
       {showSettings && (

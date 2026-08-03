@@ -105,6 +105,9 @@ export default function DashboardScreen({
           <button className="nm-back-btn" onClick={() => setPanel('single-player')}>Back</button>
           <h2 className="nm-title">Single Player<br />(Tetris Mode)</h2>
         </div>
+        <div className="controls-hint" style={{ marginBottom: 4, lineHeight: 1.9 }}>
+          <strong>Controls:</strong> ← → (or A D) = move &nbsp; ↓/S = soft drop &nbsp; ↑/W/Space = hard drop &nbsp; R = hold
+        </div>
         <div className="nm-list">
           <button
             className="dash-btn dash-btn-blue nm-start0"
@@ -228,9 +231,9 @@ export default function DashboardScreen({
           Color Cycle Guide
         </button>
 
-        <div className="tp-controls-hint">
-          <strong>P1:</strong> A/D = move &nbsp; S = soft drop &nbsp; W = hard drop<br />
-          <strong>P2:</strong> ← / → = move &nbsp; ↓ = soft drop &nbsp; ↑ = hard drop
+        <div className="controls-hint" style={{ width: 'min(280px, 55vw)', lineHeight: 1.9 }}>
+          <strong>P1:</strong> A / D = move &nbsp; S = soft drop &nbsp; W = hard drop &nbsp; R = hold<br />
+          <strong>P2:</strong> ← / → = move &nbsp; ↓ = soft drop &nbsp; ↑ = hard drop &nbsp; / = hold
         </div>
 
         <button className="dash-btn dash-btn-ghost" onClick={() => setPanel('pvp')}>
@@ -347,6 +350,10 @@ export default function DashboardScreen({
             </div>
 
             {lobbyError && <div className="ol-error">{lobbyError}</div>}
+
+            <div className="controls-hint" style={{ width: 'min(280px, 55vw)', lineHeight: 1.9 }}>
+              <strong>Controls:</strong> ← → (or A D) = move &nbsp; ↓/S = soft drop &nbsp; ↑/W/Space = hard drop &nbsp; R = hold
+            </div>
           </>
         )}
 

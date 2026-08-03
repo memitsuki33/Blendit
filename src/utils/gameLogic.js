@@ -182,15 +182,18 @@ export function addGarbageRows(board, count, garbagePool) {
   return { board: newBoard, gameOver: false };
 }
 
+const NEXT_QUEUE_SIZE = 5;
+
 // Initial game state factory
 export function createInitialState({ startLevel = 0, startScore = 0 } = {}) {
   const board = emptyBoard();
-  const nextVal = getNextPieceValue(board);
+  const nextQueue = Array.from({ length: NEXT_QUEUE_SIZE }, () => getNextPieceValue(board));
   const pieceVal = getNextPieceValue(board);
   return {
     board,
     currentPiece: { value: pieceVal, col: Math.floor(COLS / 2), row: 0 },
-    nextPieceValue: nextVal,
+    nextPieceValue: nextQueue[0], // kept for backward compat
+    nextQueue,
     score: startScore,
     level: startLevel,
     startLevel,
@@ -273,16 +276,19 @@ export function gameReducer(state, action) {
 
     case 'HOLD': {
       if (state.holdUsed || !state.currentPiece) return state;
-      const { currentPiece, heldValue, nextPieceValue, board } = state;
+      const { currentPiece, heldValue, board } = state;
+      const queue = state.nextQueue || [state.nextPieceValue];
       const spawnCol = Math.floor(COLS / 2);
       if (heldValue === null) {
-        const newNext = getNextPieceValue(board);
+        const tail = getNextPieceValue(board);
+        const newQueue = [...queue.slice(1), tail];
         return {
           ...state,
           heldValue: currentPiece.value,
           holdUsed: true,
-          currentPiece: { value: nextPieceValue, col: spawnCol, row: 0 },
-          nextPieceValue: newNext,
+          currentPiece: { value: queue[0], col: spawnCol, row: 0 },
+          nextPieceValue: newQueue[0],
+          nextQueue: newQueue,
         };
       } else {
         return {
@@ -350,8 +356,11 @@ function lockPiece(state) {
   }
 
   const spawnCol = Math.floor(COLS / 2);
-  const newPieceValue = state.nextPieceValue;
-  const nextPieceValue = getNextPieceValue(finalBoard);
+  const queue = state.nextQueue || [state.nextPieceValue];
+  const newPieceValue = queue[0];
+  const tail = getNextPieceValue(finalBoard);
+  const nextQueue = [...queue.slice(1), tail];
+  const nextPieceValue = nextQueue[0]; // backward compat
   const newPiece = { value: newPieceValue, col: spawnCol, row: 0 };
 
   if (garbageKill || !canPlace(finalBoard, newPiece.row, newPiece.col)) {
@@ -380,6 +389,7 @@ function lockPiece(state) {
     board: finalBoard,
     currentPiece: newPiece,
     nextPieceValue,
+    nextQueue,
     score: newScore,
     level,
     startLevel,

@@ -2070,6 +2070,208 @@ kbd {
   to { transform: rotate(360deg); }
 }
 
+/* ===== BATTLE GAME v2 ===== */
+.bg2-root {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  --bg2-cell: min(28px, calc((100svh - 110px) / 20), calc((100svw - 180px) / 30));
+  --bg2-gap: 2px;
+  --bg2-block-w: calc(var(--bg2-cell) * 2.6);
+  --cell-size: var(--bg2-cell);
+  --board-gap: var(--bg2-gap);
+  animation: fadeIn 0.3s ease;
+}
+
+.bg2-players-row {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.bg2-player {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+/* Info column (left of board) */
+.bg2-info-col {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  width: var(--bg2-block-w);
+  flex-shrink: 0;
+}
+
+/* Next column (right of board) */
+.bg2-next-col {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  width: var(--bg2-block-w);
+  flex-shrink: 0;
+}
+
+/* Individual info/next block */
+.bg2-block {
+  background: #0d1827;
+  border: 1.5px solid #1e3a5f;
+  border-radius: 7px;
+  padding: 6px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.bg2-label {
+  font-size: 0.5rem;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #4a6a9a;
+}
+
+.bg2-value {
+  font-size: 0.95rem;
+  font-weight: 900;
+  color: var(--text);
+  line-height: 1.1;
+}
+.bg2-value--red { color: var(--danger); }
+
+/* Colored tile inside hold / next blocks */
+.bg2-tile {
+  width: calc(var(--bg2-cell) * 1.5);
+  height: calc(var(--bg2-cell) * 1.5);
+  border-radius: 5px;
+}
+
+.bg2-board-wrap {
+  flex-shrink: 0;
+}
+
+/* Bottom row: controls + pause button */
+.bg2-bottom-row {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 8px 16px;
+  background: rgba(8, 14, 26, 0.85);
+  border-top: 1px solid #1e3a5f;
+}
+
+.bg2-pause-btn {
+  background: #0d1827;
+  border: 1.5px solid #1e3a5f;
+  border-radius: 5px;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.65rem;
+  font-weight: 900;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  padding: 6px 18px;
+  transition: background 0.15s, border-color 0.15s;
+}
+.bg2-pause-btn:hover { background: #1a2a40; border-color: #2a4f7a; }
+
+.bg2-controls-hint {
+  flex: 1;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #4a6a9a;
+  text-transform: uppercase;
+}
+
+/* Pause overlay */
+.bg2-pause-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.bg2-pause-text {
+  font-size: 3rem;
+  font-weight: 900;
+  letter-spacing: 8px;
+  color: var(--text);
+}
+
+.bg2-resume-btn {
+  background: var(--accent);
+  border: none;
+  border-radius: 8px;
+  color: #111;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  padding: 12px 28px;
+  transition: filter 0.15s;
+}
+.bg2-resume-btn:hover { filter: brightness(1.15); }
+
+/* Winner banner */
+.bg2-win-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 18px;
+  background: rgba(0, 0, 0, 0.8);
+  border-bottom: 2px solid var(--accent);
+  font-size: 1.8rem;
+  font-weight: 900;
+  letter-spacing: 4px;
+  color: var(--accent);
+  text-transform: uppercase;
+  animation: fadeIn 0.3s ease;
+}
+
+.bg2-rematch-btn {
+  background: var(--accent);
+  border: none;
+  border-radius: 8px;
+  color: #111;
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  padding: 8px 20px;
+  transition: filter 0.15s;
+}
+.bg2-rematch-btn:hover { filter: brightness(1.15); }
+
 /* ===== DESKTOP ONLINE LOBBY (dashboard sub-panel) ===== */
 .ol-level-row {
   display: flex;
